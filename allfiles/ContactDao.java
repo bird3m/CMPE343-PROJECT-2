@@ -336,4 +336,63 @@ public class ContactDao
 
         return c;
     }
+
+    public List<Contact> searchByMultipleFields(List<String> fields, List<String> keywords)
+{
+    List<Contact> result = new ArrayList<>();
+
+    if (fields == null || keywords == null || fields.size() != keywords.size())
+    {
+        return result;
+    }
+
+    Connection conn = DatabaseConnection.getConnection();
+    if (conn == null)
+    {
+        System.out.println("ContactDao: Could not obtain database connection.");
+        return result;
+    }
+
+    // Dynamic WHERE
+    StringBuilder sql = new StringBuilder(BASE_SELECT + " WHERE ");
+
+    for (int i = 0; i < fields.size(); i++)
+    {
+        String column = normalizeSearchColumn(fields.get(i));
+        if (column == null)
+        {
+            System.out.println("ContactDao: Unsupported field: " + fields.get(i));
+            return new ArrayList<>();
+        }
+
+        sql.append(column).append(" LIKE ?");
+        if (i < fields.size() - 1)
+        {
+            sql.append(" AND ");
+        }
+    }
+
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString()))
+    {
+        for (int i = 0; i < keywords.size(); i++)
+        {
+            ps.setString(i + 1, "%" + keywords.get(i) + "%");
+        }
+
+        try (ResultSet rs = ps.executeQuery())
+        {
+            while (rs.next())
+            {
+                result.add(mapRowToContact(rs));
+            }
+        }
+    }
+    catch (SQLException e)
+    {
+        System.out.println("ContactDao: SQL error in searchByMultipleFields: " + e.getMessage());
+    }
+
+    return result;
+}
+
 }

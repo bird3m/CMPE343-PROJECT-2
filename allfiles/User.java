@@ -5,6 +5,7 @@ public class User
     private int userId;
     private String username;
     private String passwordHash;
+    private String passwordSalt;
     private String name;
     private String surname;
     private Role role;
@@ -38,6 +39,16 @@ public class User
     public void setPasswordHash(String passwordHash)
     {
         this.passwordHash = passwordHash;
+    }
+
+    public String getPasswordSalt()
+    {
+        return passwordSalt;
+    }
+
+    public void setPasswordSalt(String passwordSalt)
+    {
+        this.passwordSalt = passwordSalt;
     }
 
     public String getName()

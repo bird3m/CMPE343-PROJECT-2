@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class Main
 {
@@ -6,20 +7,25 @@ public class Main
     {
         System.out.println("Starting Contact Management System...");
 
-        Connection conn = DatabaseConnection.getConnection();
-
-        if (conn == null)
+        try (Connection conn = DatabaseConnection.getConnection())
         {
-            System.out.println("Database connection failed (null returned). Please check MySQL settings.");
-            return;
+            if (conn == null)
+            {
+                System.out.println("Database connection failed (null returned). Please check MySQL settings.");
+                return;
+            }
+
+            System.out.println("Database connection successful.");
+        }
+        catch (SQLException e)
+        {
+            System.out.println("Error while closing test connection: " + e.getMessage());
         }
 
-        System.out.println("Database connection successful.");
         System.out.println("Opening login menu...\n");
 
         LoginMenu loginMenu = new LoginMenu();
         loginMenu.start();
 
-        System.out.println("Program terminated. Goodbye.");
     }
 }
