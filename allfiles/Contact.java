@@ -145,6 +145,8 @@ public class Contact
             + lastName
             + (nickname != null && !nickname.isBlank() ? " (\"" + nickname + "\")" : "")
             + " | " + phonePrimary
-            + " | " + email;
+            + " | " + email
+            + " | " + (linkedinUrl != null && !linkedinUrl.isBlank() ? linkedinUrl : "-");
     }
+
 }

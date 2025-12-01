@@ -32,7 +32,128 @@ public abstract class AbstractContactMenu extends BaseMenu
 
         List<Contact> contacts = contactDao.getAllContacts(sortField, ascending);
 
-        if (contacts.isEmpty())
+        printContactList(contacts);
+    }
+
+    // -------------------------------------------------
+    // 2) Search menu (single + multi field) – terminal screenshot formatı
+    // -------------------------------------------------
+    protected void showSearchMenu()
+    {
+        while (true)
+        {
+            System.out.println();
+            System.out.println("Single-field searches:");
+            System.out.println("1) By first name (substring match)");
+            System.out.println("2) By nickname (substring match)");
+            System.out.println("3) By LinkedIn URL (substring match)");
+            System.out.println("Multi-field searches:");
+            System.out.println("4) First name contains X AND LinkedIn URL contains Y");
+            System.out.println("5) Nickname contains X AND LinkedIn URL contains Y");
+            System.out.println("6) First name equals X AND birth month is Y (1-12)");
+            System.out.println("0) Back to menu");
+
+            System.out.print("Choice: ");
+            String choice = scanner.nextLine().trim();
+
+            switch (choice)
+            {
+                // ---------- SINGLE-FIELD ----------
+
+                case "1":
+                    System.out.print("Enter first name substring: ");
+                    String firstPart = scanner.nextLine().trim();
+                    printContactList(contactDao.searchByField("first_name", firstPart));
+                    break;
+
+                case "2":
+                    System.out.print("Enter nickname substring: ");
+                    String nickPart = scanner.nextLine().trim();
+                    printContactList(contactDao.searchByField("nickname", nickPart));
+                    break;
+
+                case "3":
+                    System.out.print("Enter LinkedIn URL substring: ");
+                    String linkPart = scanner.nextLine().trim();
+                    printContactList(contactDao.searchByField("linkedin_url", linkPart));
+                    break;
+
+                // ---------- MULTI-FIELD ----------
+
+                case "4":
+                {
+                    System.out.print("First name contains: ");
+                    String firstX = scanner.nextLine().trim();
+                    System.out.print("LinkedIn URL contains: ");
+                    String linkY = scanner.nextLine().trim();
+
+                    List<String> fields = new ArrayList<>();
+                    fields.add("first_name");
+                    fields.add("linkedin_url");
+
+                    List<String> keywords = new ArrayList<>();
+                    keywords.add(firstX);
+                    keywords.add(linkY);
+
+                    printContactList(contactDao.searchByMultipleFields(fields, keywords));
+                    break;
+                }
+
+                case "5":
+                {
+                    System.out.print("Nickname contains: ");
+                    String nickX = scanner.nextLine().trim();
+                    System.out.print("LinkedIn URL contains: ");
+                    String linkY = scanner.nextLine().trim();
+
+                    List<String> fields = new ArrayList<>();
+                    fields.add("nickname");
+                    fields.add("linkedin_url");
+
+                    List<String> keywords = new ArrayList<>();
+                    keywords.add(nickX);
+                    keywords.add(linkY);
+
+                    printContactList(contactDao.searchByMultipleFields(fields, keywords));
+                    break;
+                }
+
+                case "6":
+                {
+                    System.out.print("First name (exact match): ");
+                    String firstExact = scanner.nextLine().trim();
+                    System.out.print("Birth month (1-12): ");
+                    String monthStr = scanner.nextLine().trim();
+
+                    try
+                    {
+                        int month = Integer.parseInt(monthStr);
+                        printContactList(
+                            contactDao.searchFirstNameAndBirthMonth(firstExact, month)
+                        );
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        System.out.println("Invalid month. Please enter a number between 1 and 12.");
+                    }
+                    break;
+                }
+
+                case "0":
+                    return;
+
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        }
+    }
+
+    // -------------------------------------------------
+    // Ortak çıktı fonksiyonu
+    // -------------------------------------------------
+    protected void printContactList(List<Contact> contacts)
+    {
+        if (contacts == null || contacts.isEmpty())
         {
             System.out.println("No contacts found.");
             return;
@@ -40,106 +161,6 @@ public abstract class AbstractContactMenu extends BaseMenu
 
         System.out.println("\n--- CONTACTS ---");
         for (Contact c : contacts)
-        {
-            System.out.println(c);
-        }
-    }
-
-    // -------------------------------------------------
-    // 2) Single-field search
-    // -------------------------------------------------
-    protected void searchContactsSingleField()
-    {
-        System.out.println("\n-- Search Contacts (Single Field) --");
-        System.out.println("Fields: first_name, last_name, nickname, email, phone, linkedin");
-        System.out.print("Field: ");
-        String field = scanner.nextLine().trim();
-
-        System.out.print("Keyword: ");
-        String keyword = scanner.nextLine().trim();
-
-        if (field.isEmpty() || keyword.isEmpty())
-        {
-            System.out.println("Field and keyword cannot be empty.");
-            return;
-        }
-
-        List<Contact> contacts = contactDao.searchByField(field, keyword);
-
-        if (contacts.isEmpty())
-        {
-            System.out.println("No contacts matched.");
-            return;
-        }
-
-        System.out.println("\n--- RESULTS ---");
-        for (Contact c : contacts)
-        {
-            System.out.println(c);
-        }
-    }
-
-    // -------------------------------------------------
-    // 3) Multi-field search (AND)  → PDF'teki "multiple fields" kısmı
-    // -------------------------------------------------
-    protected void searchContactsMultiField()
-    {
-        System.out.println("\n-- Search Contacts (Multiple Fields, AND) --");
-        System.out.println("Fields you can use: first_name, last_name, nickname, email, phone, linkedin");
-        System.out.println("You can enter up to 3 field=keyword pairs.");
-        System.out.println("Example: first_name=Jon");
-
-        List<String> fields = new ArrayList<>();
-        List<String> keywords = new ArrayList<>();
-
-        for (int i = 1; i <= 3; i++)
-        {
-            System.out.print("Condition " + i + " (ENTER to stop): ");
-            String line = scanner.nextLine().trim();
-            if (line.isEmpty())
-            {
-                break;
-            }
-
-            String[] parts = line.split("=", 2);
-            if (parts.length != 2)
-            {
-                System.out.println("Invalid format. Use field=keyword (e.g. last_name=Stark).");
-                i--;
-                continue;
-            }
-
-            String field = parts[0].trim();
-            String keyword = parts[1].trim();
-
-            if (field.isEmpty() || keyword.isEmpty())
-            {
-                System.out.println("Field and keyword cannot be empty.");
-                i--;
-                continue;
-            }
-
-            fields.add(field);
-            keywords.add(keyword);
-        }
-
-        if (fields.isEmpty())
-        {
-            System.out.println("No conditions entered.");
-            return;
-        }
-
-        // 🔥 Asıl kritik satır: DAO'daki multi-field methodu burada kullanılıyor
-        List<Contact> result = contactDao.searchByMultipleFields(fields, keywords);
-
-        if (result.isEmpty())
-        {
-            System.out.println("No contacts matched all conditions.");
-            return;
-        }
-
-        System.out.println("\n--- MULTI-FIELD SEARCH RESULTS ---");
-        for (Contact c : result)
         {
             System.out.println(c);
         }

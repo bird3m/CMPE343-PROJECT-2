@@ -1,16 +1,20 @@
 import java.util.Scanner;
+import java.time.LocalDateTime;
 
 public abstract class BaseMenu
 {
     protected final User currentUser;
     protected final Scanner scanner;
     protected final AuthService authService;
+    // UserDao'yu burada tanımlamak, changePasswordFlow'u desteklemek için en kolay yoldur.
+    protected final UserDao userDao; 
 
     protected BaseMenu(User currentUser)
     {
         this.currentUser = currentUser;
         this.scanner = new Scanner(System.in);
         this.authService = new AuthService();
+        this.userDao = new UserDao();
     }
 
     public final void start()
@@ -20,7 +24,7 @@ public abstract class BaseMenu
         while (running)
         {
             System.out.println();
-            System.out.println("Logged in as: " + currentUser.getUsername()
+            System.out.println("Logged in as: " + currentUser.getName() + " " + currentUser.getSurname()
                 + " (" + currentUser.getRole() + ")");
 
             printMenuHeader();
@@ -33,6 +37,18 @@ public abstract class BaseMenu
         }
     }
 
+    /**
+     * Kullanıcıdan girdi almak için kullanılan yardımcı metot.
+     * @param prompt Kullanıcıya gösterilecek istem metni.
+     * @return Temizlenmiş girdi dizisi.
+     */
+    protected String getInputWithPrompt(String prompt)
+    {
+        System.out.print(prompt);
+        String input = this.scanner.nextLine();
+        return input.trim();
+    }
+    
     // Her rolde üstte bir başlık için
     protected abstract void printMenuHeader();
 
@@ -42,7 +58,7 @@ public abstract class BaseMenu
     /**
      * @param choice kullanıcının girdiği seçim
      * @return true → menü dönmeye devam etsin
-     *         false → logout (LoginMenu'ya dön)
+     * false → logout (LoginMenu'ya dön)
      */
     protected abstract boolean handleChoice(String choice);
 
@@ -51,15 +67,12 @@ public abstract class BaseMenu
     {
         System.out.println("\n-- Change Password --");
 
-        System.out.print("Old password: ");
-        String oldPass = scanner.nextLine().trim();
+        String oldPass = getInputWithPrompt("Old password: ");
+        String newPass1 = getInputWithPrompt("New password: ");
+        String newPass2 = getInputWithPrompt("Repeat new password: ");
 
-        System.out.print("New password: ");
-        String newPass1 = scanner.nextLine().trim();
-
-        System.out.print("Repeat new password: ");
-        String newPass2 = scanner.nextLine().trim();
-
+        // AuthService'in gerekli hash ve salt işlemlerini yapıp UserDao'yu çağırdığını varsayıyoruz.
+        // AuthService.changePassword metodunuzun User nesnesini güncellemesi önemlidir.
         boolean ok = authService.changePassword(currentUser, oldPass, newPass1, newPass2);
 
         if (ok)

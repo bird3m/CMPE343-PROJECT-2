@@ -18,11 +18,10 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
     {
         System.out.println("1) Change password");
         System.out.println("2) List all contacts (with sorting)");
-        System.out.println("3) Search contacts by a single field");
-        System.out.println("4) Search contacts by multiple fields (AND)");
-        System.out.println("5) Update existing contact");
-        System.out.println("6) Add new contact");
-        System.out.println("7) Delete existing contact");
+        System.out.println("3) Search contacts");
+        System.out.println("4) Update existing contact");
+        System.out.println("5) Add new contact");
+        System.out.println("6) Delete existing contact");
         System.out.println("0) Logout");
     }
 
@@ -40,22 +39,18 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
                 return true;
 
             case "3":
-                searchContactsSingleField();
+                showSearchMenu();
                 return true;
 
             case "4":
-                searchContactsMultiField();
-                return true;
-
-            case "5":
                 updateContactMenu();
                 return true;
 
-            case "6":
+            case "5":
                 addContactMenu();
                 return true;
 
-            case "7":
+            case "6":
                 deleteContactMenu();
                 return true;
 

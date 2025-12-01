@@ -47,7 +47,7 @@ public class AuthService
         }
 
         // 2) NEW MODE → PBKDF2 + salt
-        String computedHash = PasswordHasher.hash(plainPassword, salt);
+String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
         return storedHash.equals(computedHash);
     }
 
@@ -88,8 +88,7 @@ public class AuthService
 
         // Yeni salt + hash üret (BURADA PasswordHasher kullanıyoruz)
         String newSalt = PasswordHasher.generateSalt();
-        String newHash = PasswordHasher.hash(newPassword1, newSalt);
-
+String newHash = PasswordHasher.hashPassword(newPassword1, newSalt);
         boolean updated = userDao.updatePassword(currentUser.getUsername(), newHash, newSalt);
 
         if (updated)

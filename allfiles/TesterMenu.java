@@ -16,8 +16,7 @@ public class TesterMenu extends AbstractContactMenu
     {
         System.out.println("1) Change password");
         System.out.println("2) List all contacts (with sorting)");
-        System.out.println("3) Search contacts by a single field");
-        System.out.println("4) Search contacts by multiple fields (AND)");
+        System.out.println("3) Search contacts");
         System.out.println("0) Logout");
     }
 
@@ -35,12 +34,9 @@ public class TesterMenu extends AbstractContactMenu
                 return true;
 
             case "3":
-                searchContactsSingleField();      // AbstractContactMenu'den
+                showSearchMenu();      // AbstractContactMenu'den
                 return true;
 
-            case "4":
-                searchContactsMultiField();       // AbstractContactMenu'den
-                return true;
 
             case "0":
                 System.out.println("Logging out...");

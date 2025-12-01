@@ -8,6 +8,9 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class PasswordHasher
 {
+    /**
+     * Rastgele bir tuz (salt) üretir ve Base64 string olarak döndürür.
+     */
     public static String generateSalt()
     {
         byte[] salt = new byte[16];
@@ -15,14 +18,18 @@ public class PasswordHasher
         return Base64.getEncoder().encodeToString(salt);
     }
 
-    public static String hash(String password, String salt)
+    /**
+     * Verilen şifreyi ve tuzu (salt) kullanarak PBKDF2WithHmacSHA256 ile hashler.
+     * ManagerMenu'nün çağırdığı metot imzası budur.
+     */
+    public static String hashPassword(String password, String salt)
     {
         try
         {
             PBEKeySpec spec = new PBEKeySpec(
                 password.toCharArray(),
                 Base64.getDecoder().decode(salt),
-                20000,          // iteration count (security)
+                20000,          // iteration count
                 256             // key length
             );
 
@@ -33,7 +40,8 @@ public class PasswordHasher
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e);
+            // Genellikle bu hatalar fırlatılmaz, uygulama durdurulur veya loglanır.
+            throw new RuntimeException("Hashing failed: " + e.getMessage(), e);
         }
     }
 }

@@ -337,6 +337,45 @@ public class ContactDao
         return c;
     }
 
+    //UPDATE?
+    public List<Contact> searchFirstNameAndBirthMonth(String firstName, int month)
+{
+    List<Contact> result = new ArrayList<>();
+
+    Connection conn = DatabaseConnection.getConnection();
+    if (conn == null)
+    {
+        System.out.println("ContactDao: Could not obtain database connection.");
+        return result;
+    }
+
+    String sql = BASE_SELECT +
+        " WHERE first_name = ? " +
+        " AND birth_date IS NOT NULL " +
+        " AND MONTH(birth_date) = ?";
+
+    try (PreparedStatement ps = conn.prepareStatement(sql))
+    {
+        ps.setString(1, firstName);
+        ps.setInt(2, month);
+
+        try (ResultSet rs = ps.executeQuery())
+        {
+            while (rs.next())
+            {
+                result.add(mapRowToContact(rs));
+            }
+        }
+    }
+    catch (SQLException e)
+    {
+        System.out.println("ContactDao: SQL error in searchFirstNameAndBirthMonth: " + e.getMessage());
+    }
+
+    return result;
+}
+
+
     public List<Contact> searchByMultipleFields(List<String> fields, List<String> keywords)
 {
     List<Contact> result = new ArrayList<>();
