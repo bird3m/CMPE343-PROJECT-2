@@ -62,26 +62,32 @@ public abstract class BaseMenu
      */
     protected abstract boolean handleChoice(String choice);
 
-    // Tüm rollerin ortak change password akışı
-    protected void changePasswordFlow()
+// Tüm rollerin ortak change password akışı
+protected void changePasswordFlow()
+{
+    System.out.println("\n-- Change Password --");
+
+    System.out.print("Current password: ");
+    String oldPw = scanner.nextLine().trim();
+
+    System.out.print("New password: ");
+    String newPw1 = scanner.nextLine().trim();
+
+    System.out.print("Repeat new password: ");
+    String newPw2 = scanner.nextLine().trim();
+
+    // AuthService: User + 3 String bekliyor
+    boolean ok = authService.changePassword(currentUser, oldPw, newPw1, newPw2);
+
+    if (ok)
     {
-        System.out.println("\n-- Change Password --");
-
-        String oldPass = getInputWithPrompt("Old password: ");
-        String newPass1 = getInputWithPrompt("New password: ");
-        String newPass2 = getInputWithPrompt("Repeat new password: ");
-
-        // AuthService'in gerekli hash ve salt işlemlerini yapıp UserDao'yu çağırdığını varsayıyoruz.
-        // AuthService.changePassword metodunuzun User nesnesini güncellemesi önemlidir.
-        boolean ok = authService.changePassword(currentUser, oldPass, newPass1, newPass2);
-
-        if (ok)
-        {
-            System.out.println("Password changed successfully.");
-        }
-        else
-        {
-            System.out.println("Password change failed.");
-        }
+        System.out.println("Password updated successfully.");
     }
+    else
+    {
+        System.out.println("Password NOT changed (see error message above).");
+    }
+}
+
+
 }

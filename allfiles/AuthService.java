@@ -54,20 +54,20 @@ String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
     // -------------------------
     // CHANGE PASSWORD
     // -------------------------
-    public boolean changePassword(User currentUser,
-                                  String oldPassword,
-                                  String newPassword1,
-                                  String newPassword2)
+    public boolean changePassword(User currentUser, 
+        String oldPassword,
+        String newPassword1,
+        String newPassword2)
     {
-        if (newPassword1 == null || !newPassword1.equals(newPassword2))
+        if (newPassword1 == null || newPassword2 == null || !newPassword1.equals(newPassword2))
         {
             System.out.println("AuthService: new passwords do not match.");
             return false;
         }
 
-        if (newPassword1.length() < 4)
+        if (newPassword1.length() < 2)
         {
-            System.out.println("AuthService: new password is too short.");
+            System.out.println("AuthService: new password is too short.(min 2 characters)");
             return false;
         }
 
@@ -88,7 +88,7 @@ String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
 
         // Yeni salt + hash üret (BURADA PasswordHasher kullanıyoruz)
         String newSalt = PasswordHasher.generateSalt();
-String newHash = PasswordHasher.hashPassword(newPassword1, newSalt);
+        String newHash = PasswordHasher.hashPassword(newPassword1, newSalt);
         boolean updated = userDao.updatePassword(currentUser.getUsername(), newHash, newSalt);
 
         if (updated)

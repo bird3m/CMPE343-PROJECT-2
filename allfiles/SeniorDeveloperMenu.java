@@ -131,29 +131,63 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         String p1 = scanner.nextLine().trim();
         if (!p1.isEmpty())
         {
-            c.setPhonePrimary(p1);
+            if (!InputValidator.isValidPhone(p1))
+            {
+                System.out.println("Invalid phone number. Keeping old primary phone.");
+            }
+            else
+            {
+                c.setPhonePrimary(p1);
+            }
         }
 
         System.out.print("Secondary phone [" + c.getPhoneSecondary() + "]: ");
         String p2 = scanner.nextLine().trim();
         if (!p2.isEmpty())
         {
-            c.setPhoneSecondary(p2);
+            if (!InputValidator.isValidPhone(p2))
+            {
+                System.out.println("Invalid phone number. Keeping old secondary phone.");
+            }
+            else
+            {
+                c.setPhoneSecondary(p2);
+            }
         }
+
 
         System.out.print("Email [" + c.getEmail() + "]: ");
         String em = scanner.nextLine().trim();
         if (!em.isEmpty())
         {
-            c.setEmail(em);
+            if (!InputValidator.isValidEmail(em))
+            {
+                System.out.println("Invalid e-mail format. Example: user@example.com");
+                System.out.println("Keeping old e-mail value.");
+            }
+            else
+            {
+                c.setEmail(em);
+            }
         }
+
 
         System.out.print("LinkedIn URL [" + c.getLinkedinUrl() + "]: ");
         String li = scanner.nextLine().trim();
         if (!li.isEmpty())
         {
-            c.setLinkedinUrl(li);
+            if (!InputValidator.isValidLinkedInUrl(li))
+            {
+                System.out.println("Invalid LinkedIn URL.");
+                System.out.println("Expected format: https://www.linkedin.com/in/username");
+                System.out.println("Keeping old LinkedIn URL.");
+            }
+            else
+            {
+                c.setLinkedinUrl(li);
+            }
         }
+
 
         System.out.print("Birth date (YYYY-MM-DD) [" + c.getBirthDate() + "]: ");
         String bd = scanner.nextLine().trim();
@@ -200,35 +234,111 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         String nn = scanner.nextLine().trim();
         c.setNickname(nn.isEmpty() ? null : nn);
 
-        System.out.print("Primary phone: ");
-        c.setPhonePrimary(scanner.nextLine().trim());
+        // Primary phone (ZORUNLU)
+        String primaryPhone;
+        while (true)
+        {
+            System.out.print("Primary phone (digits only, e.g., 05001110001): ");
+            primaryPhone = scanner.nextLine().trim();
+
+            if (InputValidator.isValidPhone(primaryPhone))
+            {
+                break;
+            }
+
+            System.out.println("Invalid phone number. Use 10-15 digits, no spaces.");
+        }
+        c.setPhonePrimary(primaryPhone);
+
+        // Secondary phone (OPSİYONEL ama valid olmalı)
+        String secondaryPhone;
+        while (true)
+        {
+            System.out.print("Secondary phone (optional, ENTER to skip): ");
+            secondaryPhone = scanner.nextLine().trim();
+
+            if (secondaryPhone.isEmpty())
+            {
+                secondaryPhone = null;
+                break;
+            }
+
+            if (!InputValidator.isValidPhone(secondaryPhone))
+            {
+                System.out.println("Invalid phone number. Use 10-15 digits, no spaces.");
+                continue;
+            }
+
+            break;
+        }
+        c.setPhoneSecondary(secondaryPhone);
+
 
         System.out.print("Secondary phone (optional): ");
         String p2 = scanner.nextLine().trim();
         c.setPhoneSecondary(p2.isEmpty() ? null : p2);
 
-        System.out.print("Email: ");
-        c.setEmail(scanner.nextLine().trim());
-
-        System.out.print("LinkedIn URL (optional): ");
-        String li = scanner.nextLine().trim();
-        c.setLinkedinUrl(li.isEmpty() ? null : li);
-
-        System.out.print("Birth date (YYYY-MM-DD, optional): ");
-        String bd = scanner.nextLine().trim();
-        if (!bd.isEmpty())
+        String email;
+        while (true)
         {
-            try
+            System.out.print("Email: ");
+            email = scanner.nextLine().trim();
+
+            if (InputValidator.isValidEmail(email))
             {
-                c.setBirthDate(LocalDate.parse(bd));
+                break;
             }
-            catch (Exception e)
-            {
-                System.out.println("Invalid date, birth date will be null.");
-            }
+
+            System.out.println("Invalid e-mail format. Example: user@example.com");
+        }
+        c.setEmail(email);
+
+
+    String linkedIn;
+    while (true)
+    {
+        System.out.print("LinkedIn URL (optional, ENTER to skip)\n"
+            + "Expected format: https://www.linkedin.com/in/username\n"
+            + "LinkedIn: ");
+        linkedIn = scanner.nextLine().trim();
+
+        if (linkedIn.isEmpty())
+        {
+            // kullanıcı boş bırakmak istiyor → null
+            linkedIn = null;
+            break;
         }
 
-        int newId = contactDao.insertContact(c);
+        if (!InputValidator.isValidLinkedInUrl(linkedIn))
+        {
+            System.out.println("Invalid LinkedIn URL. Please follow the format above.");
+            continue;
+        }
+
+        break;
+    }
+    c.setLinkedinUrl(linkedIn);
+
+
+    LocalDate birthDate;
+    while (true)
+    {
+        System.out.print("Birth date (YYYY-MM-DD): ");
+        String bd = scanner.nextLine().trim();
+
+        if (!InputValidator.isValidIsoDate(bd))
+        {
+            System.out.println("Invalid date format. Expected YYYY-MM-DD and a real date.");
+            continue;
+        }
+
+        birthDate = LocalDate.parse(bd);
+        break;
+    }
+    
+    c.setBirthDate(birthDate);
+
+    int newId = contactDao.insertContact(c);
 
         if (newId > 0)
         {

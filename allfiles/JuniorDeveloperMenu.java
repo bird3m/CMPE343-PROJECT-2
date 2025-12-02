@@ -20,7 +20,7 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
         System.out.println("2) List all contacts (with sorting)");
         System.out.println("3) Search contacts");
         System.out.println("4) Update existing contact");
-         System.out.println("5) Undo");
+         System.out.println("5) Undo the last operation");
         System.out.println("0) Logout");
     }
 
@@ -46,7 +46,7 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
                 return true;
             
              case "5":
-                UndoManager.undoLast();   // 🔥 Burada son işlemi geri alıyoruz
+                UndoManager.undoLast();   
                 return true;
 
             case "0":
@@ -118,49 +118,89 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             c.setNickname(nn);
         }
 
-        System.out.print("Primary phone [" + c.getPhonePrimary() + "]: ");
-        String p1 = scanner.nextLine().trim();
-        if (!p1.isEmpty())
+    // Primary phone – boş bırakırsan eski kalır, girersen kontrol eder
+    System.out.print("Primary phone [" + c.getPhonePrimary() + "]: ");
+    String p1 = scanner.nextLine().trim();
+    if (!p1.isEmpty())
+    {
+        if (!InputValidator.isValidPhone(p1))
+        {
+            System.out.println("Invalid phone number. Keeping old primary phone.");
+        }
+        else
         {
             c.setPhonePrimary(p1);
         }
+    }
 
-        System.out.print("Secondary phone [" + c.getPhoneSecondary() + "]: ");
-        String p2 = scanner.nextLine().trim();
-        if (!p2.isEmpty())
+    // Secondary phone – girersen kontrol, boşsa eski kalır / null kalır
+    System.out.print("Secondary phone [" + c.getPhoneSecondary() + "]: ");
+    String p2 = scanner.nextLine().trim();
+    if (!p2.isEmpty())
+    {
+        if (!InputValidator.isValidPhone(p2))
+        {
+            System.out.println("Invalid phone number. Keeping old secondary phone.");
+        }
+        else
         {
             c.setPhoneSecondary(p2);
         }
+    }
 
-        System.out.print("Email [" + c.getEmail() + "]: ");
-        String em = scanner.nextLine().trim();
+
+       System.out.print("Email [" + c.getEmail() + "]: ");
+       String em = scanner.nextLine().trim();
         if (!em.isEmpty())
         {
-            c.setEmail(em);
+            if (!InputValidator.isValidEmail(em))
+            {
+                System.out.println("Invalid e-mail format. Example: user@example.com");
+                System.out.println("Keeping old e-mail value.");
+            }
+            else
+            {
+                c.setEmail(em);
+            }
         }
+
 
         System.out.print("LinkedIn URL [" + c.getLinkedinUrl() + "]: ");
         String li = scanner.nextLine().trim();
         if (!li.isEmpty())
         {
-            c.setLinkedinUrl(li);
+            if (!InputValidator.isValidLinkedInUrl(li))
+            {
+                System.out.println("Invalid LinkedIn URL.");
+                System.out.println("Expected format: https://www.linkedin.com/in/username");
+                System.out.println("Keeping old LinkedIn URL.");
+            }
+            else
+            {
+                c.setLinkedinUrl(li);
+            }
         }
+
+
 
         System.out.print("Birth date (YYYY-MM-DD) [" + c.getBirthDate() + "]: ");
         String bd = scanner.nextLine().trim();
         if (!bd.isEmpty())
         {
-            try
+            if (!InputValidator.isValidIsoDate(bd))
             {
-                c.setBirthDate(LocalDate.parse(bd));
+                System.out.println("Invalid date format. Expected YYYY-MM-DD and a real date.");
+                System.out.println("Keeping old birth date.");
             }
-            catch (Exception e)
+            else
             {
-                System.out.println("Invalid date, keeping old value.");
+                c.setBirthDate(LocalDate.parse(bd)); // valid format 
             }
         }
 
-               boolean ok = contactDao.updateContact(c);
+
+
+        boolean ok = contactDao.updateContact(c);
         if (ok)
         {
             System.out.println("Contact updated successfully.");
