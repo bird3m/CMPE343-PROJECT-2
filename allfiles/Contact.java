@@ -136,6 +136,7 @@ public class Contact
         this.updatedAt = updatedAt;
     }
 
+   
     @Override
     public String toString()
     {
@@ -144,9 +145,10 @@ public class Contact
             + (middleName != null ? middleName + " " : "")
             + lastName
             + (nickname != null && !nickname.isBlank() ? " (\"" + nickname + "\")" : "")
-            + " | " + phonePrimary
-            + " | " + email
-            + " | " + (linkedinUrl != null && !linkedinUrl.isBlank() ? linkedinUrl : "-");
+            + " | Phone: " + phonePrimary
+            + " | Email: " + email
+            + " | Birth Date: " + (birthDate != null ? birthDate.toString() : "N/A");
     }
+
 
 }
