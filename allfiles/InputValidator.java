@@ -5,6 +5,26 @@ import java.util.regex.Pattern;
 
 public class InputValidator
 {
+    private static final Pattern NAME_PATTERN =
+    // Unicode harfler + boşluk + . ' -
+    Pattern.compile("^[\\p{L}]{2,50}$");
+
+    public static boolean isValidName(String name)
+    {
+        if (name == null)
+        {
+            return false;
+        }
+
+        String trimmed = name.trim();
+        if (trimmed.isEmpty())
+        {
+            return false;
+        }
+
+        return NAME_PATTERN.matcher(trimmed).matches();
+    }
+
     /**
      * regex for email pattern, checking the format
     */

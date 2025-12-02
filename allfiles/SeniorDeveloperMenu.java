@@ -99,26 +99,51 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         System.out.println("Current contact: " + c.toString());
         System.out.println("Press ENTER to keep existing value.\n");
 
+        // FIRST NAME
         System.out.print("First name [" + c.getFirstName() + "]: ");
         String fn = scanner.nextLine().trim();
         if (!fn.isEmpty())
         {
-            c.setFirstName(fn);
+            if (!InputValidator.isValidName(fn))
+            {
+                System.out.println("Invalid first name. Keeping old value.");
+            }
+            else
+            {
+                c.setFirstName(fn);
+            }
         }
 
+        // MIDDLE NAME
         System.out.print("Middle name [" + c.getMiddleName() + "]: ");
         String mn = scanner.nextLine().trim();
         if (!mn.isEmpty())
         {
-            c.setMiddleName(mn);
+            if (!InputValidator.isValidName(mn))
+            {
+                System.out.println("Invalid middle name. Keeping old value.");
+            }
+            else
+            {
+                c.setMiddleName(mn);
+            }
         }
 
+        // LAST NAME
         System.out.print("Last name [" + c.getLastName() + "]: ");
         String ln = scanner.nextLine().trim();
         if (!ln.isEmpty())
         {
-            c.setLastName(ln);
+            if (!InputValidator.isValidName(ln))
+            {
+                System.out.println("Invalid last name. Keeping old value.");
+            }
+            else
+            {
+                c.setLastName(ln);
+            }
         }
+
 
         System.out.print("Nickname [" + c.getNickname() + "]: ");
         String nn = scanner.nextLine().trim();
@@ -220,15 +245,62 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
 
         System.out.println("\n-- Add New Contact --");
 
-        System.out.print("First name: ");
-        c.setFirstName(scanner.nextLine().trim());
+        // FIRST NAME (zorunlu)
+        String firstName;
+        while (true)
+        {
+            System.out.print("First name: ");
+            firstName = scanner.nextLine().trim();
 
-        System.out.print("Middle name (optional): ");
-        String mn = scanner.nextLine().trim();
-        c.setMiddleName(mn.isEmpty() ? null : mn);
+            if (InputValidator.isValidName(firstName))
+            {
+                break;
+            }
 
-        System.out.print("Last name: ");
-        c.setLastName(scanner.nextLine().trim());
+            System.out.println("Invalid first name. Use only letters.");
+        }
+        c.setFirstName(firstName);
+
+        // MIDDLE NAME (opsiyonel ama valid olursa kaydedilecek)
+        String middleName = null;
+        while (true)
+        {
+            System.out.print("Middle name (optional): ");
+            String mn = scanner.nextLine().trim();
+
+            if (mn.isEmpty())
+            {
+                middleName = null;
+                break;
+            }
+
+            if (!InputValidator.isValidName(mn))
+            {
+                System.out.println("Invalid middle name. Use only letters.");
+                continue;
+            }
+
+            middleName = mn;
+            break;
+        }
+        c.setMiddleName(middleName);
+
+        // LAST NAME (zorunlu)
+        String lastName;
+        while (true)
+        {
+            System.out.print("Last name: ");
+            lastName = scanner.nextLine().trim();
+
+            if (InputValidator.isValidName(lastName))
+            {
+                break;
+            }
+
+            System.out.println("Invalid last name. Use only letters.");
+        }
+        c.setLastName(lastName);
+
 
         System.out.print("Nickname (optional): ");
         String nn = scanner.nextLine().trim();

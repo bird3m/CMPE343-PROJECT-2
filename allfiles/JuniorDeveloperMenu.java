@@ -90,26 +90,51 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
         System.out.println("Current contact: " + c.toString());
         System.out.println("Press ENTER to keep existing value.\n");
 
+        // FIRST NAME
         System.out.print("First name [" + c.getFirstName() + "]: ");
         String fn = scanner.nextLine().trim();
         if (!fn.isEmpty())
         {
-            c.setFirstName(fn);
+            if (!InputValidator.isValidName(fn))
+            {
+                System.out.println("Invalid first name. Keeping old value.");
+            }
+            else
+            {
+                c.setFirstName(fn);
+            }
         }
 
+        // MIDDLE NAME
         System.out.print("Middle name [" + c.getMiddleName() + "]: ");
         String mn = scanner.nextLine().trim();
         if (!mn.isEmpty())
         {
-            c.setMiddleName(mn);
+            if (!InputValidator.isValidName(mn))
+            {
+                System.out.println("Invalid middle name. Keeping old value.");
+            }
+            else
+            {
+                c.setMiddleName(mn);
+            }
         }
 
+        // LAST NAME
         System.out.print("Last name [" + c.getLastName() + "]: ");
         String ln = scanner.nextLine().trim();
         if (!ln.isEmpty())
         {
-            c.setLastName(ln);
+            if (!InputValidator.isValidName(ln))
+            {
+                System.out.println("Invalid last name. Keeping old value.");
+            }
+            else
+            {
+                c.setLastName(ln);
+            }
         }
+
 
         System.out.print("Nickname [" + c.getNickname() + "]: ");
         String nn = scanner.nextLine().trim();
