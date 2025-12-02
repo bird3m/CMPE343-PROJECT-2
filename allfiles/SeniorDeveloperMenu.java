@@ -22,6 +22,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         System.out.println("4) Update existing contact");
         System.out.println("5) Add new contact");
         System.out.println("6) Delete existing contact");
+         System.out.println("7) Undo last operation");
         System.out.println("0) Logout");
     }
 
@@ -54,6 +55,10 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
                 deleteContactMenu();
                 return true;
 
+            case "7":
+                UndoManager.undoLast();
+                return true;
+
             case "0":
                 System.out.println("Logging out...");
                 return false;
@@ -66,7 +71,6 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
 
     private void updateContactMenu()
     {
-        // JuniorDeveloperMenu'daki ile aynı mantık, tekrar yazıyoruz
         System.out.print("\nEnter contact ID to update: ");
         String idStr = scanner.nextLine().trim();
 
@@ -81,12 +85,16 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
-        Contact c = contactDao.getById(id);
+               Contact c = contactDao.getById(id);
         if (c == null)
         {
             System.out.println("Contact not found.");
             return;
         }
+
+        // UNDO için eski halin kopyasını al
+        Contact before = copyContact(c);
+
 
         System.out.println("Current contact: " + c.toString());
         System.out.println("Press ENTER to keep existing value.\n");
@@ -220,15 +228,28 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             }
         }
 
-        boolean ok = contactDao.insertContact(c);
-        if (ok)
+        int newId = contactDao.insertContact(c);
+
+        if (newId > 0)
         {
             System.out.println("Contact inserted successfully.");
+
+            // UNDO KAYDI = eklenen contact'ı geri sil
+            UndoManager.add(new UndoableCommand()
+            {
+                @Override
+                public void undo()
+                {
+                    contactDao.deleteContact(newId);
+                    System.out.println("Undo: added contact removed.");
+                }
+            });
         }
         else
         {
             System.out.println("Failed to insert contact.");
         }
+
     }
 
     private void deleteContactMenu()
@@ -247,14 +268,36 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
+        // 1) Silmeden önce contact’ın yedeğini al
+        Contact backup = contactDao.getById(id);
+
+        if (backup == null)
+        {
+            System.out.println("Contact not found.");
+            return;
+        }
+
+        // 2) Silme işlemi
         boolean ok = contactDao.deleteContact(id);
         if (ok)
         {
             System.out.println("Contact deleted.");
+
+            // 3) UNDO kaydı → backup contact geri eklenecek
+            UndoManager.add(new UndoableCommand()
+            {
+                @Override
+                public void undo()
+                {
+                    contactDao.insertContact(backup);
+                    System.out.println("Undo: deleted contact restored.");
+                }
+            });
         }
         else
         {
             System.out.println("Failed to delete contact (maybe not found).");
         }
+
     }
 }

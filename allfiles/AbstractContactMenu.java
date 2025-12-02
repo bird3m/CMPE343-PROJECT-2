@@ -165,4 +165,26 @@ public abstract class AbstractContactMenu extends BaseMenu
             System.out.println(c);
         }
     }
+
+        // ---- Helper: Contact kopyala (undo için) ----
+    protected Contact copyContact(Contact src)
+    {
+        if (src == null) return null;
+
+        Contact c = new Contact();
+        c.setContactId(src.getContactId());
+        c.setFirstName(src.getFirstName());
+        c.setMiddleName(src.getMiddleName());
+        c.setLastName(src.getLastName());
+        c.setNickname(src.getNickname());
+        c.setPhonePrimary(src.getPhonePrimary());
+        c.setPhoneSecondary(src.getPhoneSecondary());
+        c.setEmail(src.getEmail());
+        c.setLinkedinUrl(src.getLinkedinUrl());
+        c.setBirthDate(src.getBirthDate());
+        c.setCreatedAt(src.getCreatedAt());
+        c.setUpdatedAt(src.getUpdatedAt());
+        return c;
+    }
 }
+

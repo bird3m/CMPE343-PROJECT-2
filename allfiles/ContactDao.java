@@ -233,50 +233,64 @@ public class ContactDao
         }
     }
 
-    public boolean insertContact(Contact c)
+    public int insertContact(Contact c)
+{
+    Connection conn = DatabaseConnection.getConnection();
+    if (conn == null)
     {
-        Connection conn = DatabaseConnection.getConnection();
-        if (conn == null)
-        {
-            System.out.println("ContactDao: Could not obtain database connection.");
-            return false;
-        }
-
-        String sql =
-            "INSERT INTO contacts " +
-            "(first_name, middle_name, last_name, nickname, phone_primary, " +
-            "phone_secondary, email, linkedin_url, birth_date, created_at, updated_at) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql))
-        {
-            ps.setString(1, c.getFirstName());
-            ps.setString(2, c.getMiddleName());
-            ps.setString(3, c.getLastName());
-            ps.setString(4, c.getNickname());
-            ps.setString(5, c.getPhonePrimary());
-            ps.setString(6, c.getPhoneSecondary());
-            ps.setString(7, c.getEmail());
-            ps.setString(8, c.getLinkedinUrl());
-
-            if (c.getBirthDate() != null)
-            {
-                ps.setDate(9, Date.valueOf(c.getBirthDate()));
-            }
-            else
-            {
-                ps.setDate(9, null);
-            }
-
-            int inserted = ps.executeUpdate();
-            return inserted > 0;
-        }
-        catch (SQLException e)
-        {
-            System.out.println("ContactDao: SQL error in insertContact: " + e.getMessage());
-            return false;
-        }
+        System.out.println("ContactDao: Could not obtain database connection.");
+        return -1;
     }
+
+    String sql =
+        "INSERT INTO contacts " +
+        "(first_name, middle_name, last_name, nickname, phone_primary, " +
+        "phone_secondary, email, linkedin_url, birth_date, created_at, updated_at) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
+    try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS))
+    {
+        ps.setString(1, c.getFirstName());
+        ps.setString(2, c.getMiddleName());
+        ps.setString(3, c.getLastName());
+        ps.setString(4, c.getNickname());
+        ps.setString(5, c.getPhonePrimary());
+        ps.setString(6, c.getPhoneSecondary());
+        ps.setString(7, c.getEmail());
+        ps.setString(8, c.getLinkedinUrl());
+
+        if (c.getBirthDate() != null)
+        {
+            ps.setDate(9, Date.valueOf(c.getBirthDate()));
+        }
+        else
+        {
+            ps.setDate(9, null);
+        }
+
+        int affected = ps.executeUpdate();
+        if (affected == 0)
+        {
+            return -1;
+        }
+
+        try (ResultSet keys = ps.getGeneratedKeys())
+        {
+            if (keys.next())
+            {
+                return keys.getInt(1);   // ← YENİ CONTACT ID
+            }
+        }
+
+        return -1;
+    }
+    catch (SQLException e)
+    {
+        System.out.println("ContactDao: SQL error in insertContact: " + e.getMessage());
+        return -1;
+    }
+}
+
 
     public boolean deleteContact(int contactId)
     {

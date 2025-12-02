@@ -20,6 +20,7 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
         System.out.println("2) List all contacts (with sorting)");
         System.out.println("3) Search contacts");
         System.out.println("4) Update existing contact");
+         System.out.println("5) Undo");
         System.out.println("0) Logout");
     }
 
@@ -42,6 +43,10 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
 
             case "4":
                 updateContactMenu();
+                return true;
+            
+             case "5":
+                UndoManager.undoLast();   // 🔥 Burada son işlemi geri alıyoruz
                 return true;
 
             case "0":
@@ -70,12 +75,17 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
-        Contact c = contactDao.getById(id);
+               Contact c = contactDao.getById(id);
         if (c == null)
         {
             System.out.println("Contact not found.");
             return;
         }
+
+        // UNDO için eski halin kopyasını al
+        Contact before = copyContact(c);
+
+
 
         System.out.println("Current contact: " + c.toString());
         System.out.println("Press ENTER to keep existing value.\n");
@@ -150,14 +160,26 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             }
         }
 
-        boolean ok = contactDao.updateContact(c);
+               boolean ok = contactDao.updateContact(c);
         if (ok)
         {
             System.out.println("Contact updated successfully.");
+
+            // 🔙 UNDO kaydı
+            UndoManager.add(new UndoableCommand()
+            {
+                @Override
+                public void undo()
+                {
+                    contactDao.updateContact(before);
+                    System.out.println("Undo: contact reverted to previous state.");
+                }
+            });
         }
         else
         {
             System.out.println("Failed to update contact.");
         }
+
     }
 }
