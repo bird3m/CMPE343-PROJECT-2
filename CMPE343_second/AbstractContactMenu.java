@@ -1,9 +1,20 @@
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * Base abstract menu class for all contact-related menu screens.
+ * Shared by Tester, Junior Developer, Senior Developer, and Manager menus.
+ * Provides common search and list operations.
+ */
 
 public abstract class AbstractContactMenu extends BaseMenu
 {
+     /** Data access object for performing contact queries. */
     protected final ContactDao contactDao;
+     /**
+     * Constructor that initializes the menu for the current user.
+     *
+     * @param currentUser the logged-in user
+     */
 
     protected AbstractContactMenu(User currentUser)
     {
@@ -14,6 +25,11 @@ public abstract class AbstractContactMenu extends BaseMenu
     // -------------------------------------------------
     // 1) List contacts with sorting (Tester/Junior/Senior)
     // -------------------------------------------------
+    /**
+     * Lists all contacts with sorting options.
+     * User can choose the field and sort direction.
+     * If nothing is entered, sorting defaults to contact_id.
+     */
     protected void listContactsWithSorting()
     {
         System.out.println("\n-- List Contacts --");
@@ -48,6 +64,11 @@ public abstract class AbstractContactMenu extends BaseMenu
     // -------------------------------------------------
     // 2) Single-field search
     // -------------------------------------------------
+    /**
+     * Performs a single-field search.
+     * User selects one field and enters a keyword.
+     * Supports partial matching.
+     */
     protected void searchContactsSingleField()
     {
         System.out.println("\n-- Search Contacts (Single Field) --");
@@ -82,6 +103,12 @@ public abstract class AbstractContactMenu extends BaseMenu
     // -------------------------------------------------
     // 3) Multi-field search (AND)  → PDF'teki "multiple fields" kısmı
     // -------------------------------------------------
+      /**
+     * Performs a multi-field search using AND logic.
+     * This corresponds to the "multiple fields search" requirement in the project PDF.
+     * User can enter up to 3 field=keyword conditions.
+     * Only contacts matching all conditions will be returned.
+     */
     protected void searchContactsMultiField()
     {
         System.out.println("\n-- Search Contacts (Multiple Fields, AND) --");
@@ -129,7 +156,8 @@ public abstract class AbstractContactMenu extends BaseMenu
             return;
         }
 
-        // 🔥 Asıl kritik satır: DAO'daki multi-field methodu burada kullanılıyor
+       // 🔥 Key line: this calls the multi-field search method inside the DAO
+
         List<Contact> result = contactDao.searchByMultipleFields(fields, keywords);
 
         if (result.isEmpty())
