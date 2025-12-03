@@ -6,7 +6,10 @@ public abstract class BaseMenu
     protected final User currentUser;
     protected final Scanner scanner;
     protected final AuthService authService;
-    // UserDao'yu burada tanımlamak, changePasswordFlow'u desteklemek için en kolay yoldur.
+
+    /**
+     * Defining UserDao here is the simplest way to support changePasswordFlow.
+     */
     protected final UserDao userDao; 
 
     protected BaseMenu(User currentUser)
@@ -38,9 +41,10 @@ public abstract class BaseMenu
     }
 
     /**
-     * Kullanıcıdan girdi almak için kullanılan yardımcı metot.
-     * @param prompt Kullanıcıya gösterilecek istem metni.
-     * @return Temizlenmiş girdi dizisi.
+     * Helper method used for safely receiving input from the user.
+     *
+     * @param prompt text shown to the user
+     * @return trimmed input string
      */
     protected String getInputWithPrompt(String prompt)
     {
@@ -49,20 +53,24 @@ public abstract class BaseMenu
         return input.trim();
     }
     
-    // Her rolde üstte bir başlık için
+    /** Header shown at the top of each role’s menu. */
     protected abstract void printMenuHeader();
 
-    // Her rolde menü seçenekleri için
+    /** Menu options specific to each role. */
     protected abstract void printMenuOptions();
 
     /**
-     * @param choice kullanıcının girdiği seçim
-     * @return true → menü dönmeye devam etsin
-     * false → logout (LoginMenu'ya dön)
+     * Handles user's menu selection.
+     *
+     * @param choice user’s input option
+     * @return true → continue menu loop  
+     *         false → logout and return to LoginMenu
      */
     protected abstract boolean handleChoice(String choice);
 
-    // Tüm rollerin ortak change password akışı
+    /**
+     * Common change-password flow shared by all roles.
+     */
     protected void changePasswordFlow()
     {
         System.out.println("\n-- Change Password --");
@@ -71,8 +79,11 @@ public abstract class BaseMenu
         String newPass1 = getInputWithPrompt("New password: ");
         String newPass2 = getInputWithPrompt("Repeat new password: ");
 
-        // AuthService'in gerekli hash ve salt işlemlerini yapıp UserDao'yu çağırdığını varsayıyoruz.
-        // AuthService.changePassword metodunuzun User nesnesini güncellemesi önemlidir.
+        /**
+         * We assume AuthService performs necessary hashing/salt operations
+         * and uses UserDao internally.  
+         * It's important that AuthService.changePassword updates the User object.
+         */
         boolean ok = authService.changePassword(currentUser, oldPass, newPass1, newPass2);
 
         if (ok)
