@@ -1,18 +1,28 @@
 import java.time.LocalDate;
+/**
+ * Menu class for the Senior Developer role.
+ */
 
 public class SeniorDeveloperMenu extends AbstractContactMenu
 {
+    /**
+     * Creates the menu for the senior developer.
+     */
     public SeniorDeveloperMenu(User currentUser)
     {
         super(currentUser);
     }
-
+   /**
+     * Prints the menu header.
+     */
     @Override
     protected void printMenuHeader()
     {
         System.out.println("=== SENIOR DEVELOPER MENU ===");
     }
-
+    /**
+     * Displays the menu options.
+     */
     @Override
     protected void printMenuOptions()
     {
@@ -25,7 +35,9 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
          System.out.println("7) Undo last operation");
         System.out.println("0) Logout");
     }
-
+   /**
+     * Handles the selected menu action.
+     */
     @Override
     protected boolean handleChoice(String choice)
     {
@@ -68,7 +80,9 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
                 return true;
         }
     }
-
+    /**
+     * Updates an existing contact.
+     */
     private void updateContactMenu()
     {
         System.out.print("\nEnter contact ID to update: ");
@@ -92,7 +106,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
-        // UNDO için eski halin kopyasını al
+        // Take a copy of the previous state for UNDO
         Contact before = copyContact(c);
 
 
@@ -238,14 +252,16 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             System.out.println("Failed to update contact.");
         }
     }
-
+   /**
+     * Adds a new contact.
+     */
     private void addContactMenu()
     {
         Contact c = new Contact();
 
         System.out.println("\n-- Add New Contact --");
 
-        // FIRST NAME (zorunlu)
+        // FIRST NAME (mandatory)
         String firstName;
         while (true)
         {
@@ -261,7 +277,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         }
         c.setFirstName(firstName);
 
-        // MIDDLE NAME (opsiyonel ama valid olursa kaydedilecek)
+        // MIDDLE NAME (optional but will be saved if valid)
         String middleName = null;
         while (true)
         {
@@ -285,7 +301,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         }
         c.setMiddleName(middleName);
 
-        // LAST NAME (zorunlu)
+        // LAST NAME (MANDATORY)
         String lastName;
         while (true)
         {
@@ -306,7 +322,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         String nn = scanner.nextLine().trim();
         c.setNickname(nn.isEmpty() ? null : nn);
 
-        // Primary phone (ZORUNLU)
+        // Primary phone (MANDATORY)
         String primaryPhone;
         while (true)
         {
@@ -322,7 +338,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         }
         c.setPhonePrimary(primaryPhone);
 
-        // Secondary phone (OPSİYONEL ama valid olmalı)
+        // Secondary phone (OPTIONAL but must be valid)
         String secondaryPhone;
         while (true)
         {
@@ -376,7 +392,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
 
         if (linkedIn.isEmpty())
         {
-            // kullanıcı boş bırakmak istiyor → null
+            // The user wants to leave it blank → null
             linkedIn = null;
             break;
         }
@@ -416,7 +432,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         {
             System.out.println("Contact inserted successfully.");
 
-            // UNDO KAYDI = eklenen contact'ı geri sil
+            // UNDO RECORD = Delete the added contact
             UndoManager.add(new UndoableCommand()
             {
                 @Override
@@ -433,7 +449,9 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         }
 
     }
-
+    /**
+     * Adds a new contact.
+     */
     private void deleteContactMenu()
     {
         System.out.print("\nEnter contact ID to delete: ");
@@ -450,7 +468,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
-        // 1) Silmeden önce contact’ın yedeğini al
+        // 1) Back up your contacts before deleting them
         Contact backup = contactDao.getById(id);
 
         if (backup == null)
@@ -459,13 +477,13 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
-        // 2) Silme işlemi
+        // 2) Deletion process
         boolean ok = contactDao.deleteContact(id);
         if (ok)
         {
             System.out.println("Contact deleted.");
 
-            // 3) UNDO kaydı → backup contact geri eklenecek
+            // 3) UNDO record → backup contact will be added back
             UndoManager.add(new UndoableCommand()
             {
                 @Override
