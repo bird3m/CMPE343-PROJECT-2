@@ -5,10 +5,15 @@ import java.util.regex.Pattern;
 
 public class InputValidator
 {
+    /**
+     * Unicode letters only pattern (2–50 characters).
+     */
     private static final Pattern NAME_PATTERN =
-    // Unicode harfler + boşluk + . ' -
-    Pattern.compile("^[\\p{L}]{2,50}$");
+        Pattern.compile("^[\\p{L}]{2,50}$");
 
+    /**
+     * Validates a name using the Unicode letter pattern.
+     */
     public static boolean isValidName(String name)
     {
         if (name == null)
@@ -26,12 +31,14 @@ public class InputValidator
     }
 
     /**
-     * regex for email pattern, checking the format
-    */
-
+     * Regex for email pattern, checking the format.
+     */
     private static final Pattern EMAIL_PATTERN =
         Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
+    /**
+     * Validates an email address using the email regex.
+     */
     public static boolean isValidEmail(String email)
     {
         if (email == null)
@@ -47,7 +54,7 @@ public class InputValidator
     }
 
     /**
-     * regex for birthdate pattern, checking the format
+     * Regex for birthdate pattern, checking the format YYYY-MM-DD.
      */
     public static boolean isValidIsoDate(String text)
     {
@@ -73,9 +80,15 @@ public class InputValidator
         }
     }
 
+    /**
+     * Regex for LinkedIn profile URL format.
+     */
     private static final Pattern LINKEDIN_PATTERN =
-    Pattern.compile("^https://(www\\.)?linkedin\\.com/in/[A-Za-z0-9_-]+/?$");
+        Pattern.compile("^https://(www\\.)?linkedin\\.com/in/[A-Za-z0-9_-]+/?$");
 
+    /**
+     * Validates a LinkedIn profile URL.
+     */
     public static boolean isValidLinkedInUrl(String url)
     {
         if (url == null)
@@ -92,10 +105,15 @@ public class InputValidator
         return LINKEDIN_PATTERN.matcher(trimmed).matches();
     }
 
-    
+    /**
+     * Regex for phone numbers (digits only).
+     */
     private static final Pattern PHONE_PATTERN =
-    Pattern.compile("^\\d{10,15}$");
+        Pattern.compile("^\\d{10,15}$");
 
+    /**
+     * Validates a phone number (digits only, 10–15 characters).
+     */
     public static boolean isValidPhone(String phone)
     {
         if (phone == null)
@@ -109,9 +127,6 @@ public class InputValidator
             return false;
         }
 
-        //takes digits only
         return PHONE_PATTERN.matcher(trimmed).matches();
     }
-
-
 }
