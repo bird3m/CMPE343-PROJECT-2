@@ -2,17 +2,26 @@ import java.time.LocalDate;
 
 public class JuniorDeveloperMenu extends AbstractContactMenu
 {
+    /**
+     * Constructor for the Junior Developer menu.
+     */
     public JuniorDeveloperMenu(User currentUser)
     {
         super(currentUser);
     }
 
+    /**
+     * Prints the menu header for the Junior Developer.
+     */
     @Override
     protected void printMenuHeader()
     {
         System.out.println("=== JUNIOR DEVELOPER MENU ===");
     }
 
+    /**
+     * Prints the available menu options.
+     */
     @Override
     protected void printMenuOptions()
     {
@@ -20,10 +29,13 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
         System.out.println("2) List all contacts (with sorting)");
         System.out.println("3) Search contacts");
         System.out.println("4) Update existing contact");
-         System.out.println("5) Undo the last operation");
+        System.out.println("5) Undo the last operation");
         System.out.println("0) Logout");
     }
 
+    /**
+     * Handles the user’s menu choice.
+     */
     @Override
     protected boolean handleChoice(String choice)
     {
@@ -44,9 +56,9 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             case "4":
                 updateContactMenu();
                 return true;
-            
-             case "5":
-                UndoManager.undoLast();   
+
+            case "5":
+                UndoManager.undoLast();
                 return true;
 
             case "0":
@@ -59,6 +71,9 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
         }
     }
 
+    /**
+     * Updates an existing contact record.
+     */
     private void updateContactMenu()
     {
         System.out.print("\nEnter contact ID to update: ");
@@ -75,22 +90,21 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
-               Contact c = contactDao.getById(id);
+        Contact c = contactDao.getById(id);
         if (c == null)
         {
             System.out.println("Contact not found.");
             return;
         }
 
-        // UNDO için eski halin kopyasını al
+        /**
+         * Copies the old contact for undo.
+         */
         Contact before = copyContact(c);
-
-
 
         System.out.println("Current contact: " + c.toString());
         System.out.println("Press ENTER to keep existing value.\n");
 
-        // FIRST NAME
         System.out.print("First name [" + c.getFirstName() + "]: ");
         String fn = scanner.nextLine().trim();
         if (!fn.isEmpty())
@@ -105,7 +119,6 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             }
         }
 
-        // MIDDLE NAME
         System.out.print("Middle name [" + c.getMiddleName() + "]: ");
         String mn = scanner.nextLine().trim();
         if (!mn.isEmpty())
@@ -120,7 +133,6 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             }
         }
 
-        // LAST NAME
         System.out.print("Last name [" + c.getLastName() + "]: ");
         String ln = scanner.nextLine().trim();
         if (!ln.isEmpty())
@@ -135,7 +147,6 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             }
         }
 
-
         System.out.print("Nickname [" + c.getNickname() + "]: ");
         String nn = scanner.nextLine().trim();
         if (!nn.isEmpty())
@@ -143,45 +154,41 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             c.setNickname(nn);
         }
 
-    // Primary phone – boş bırakırsan eski kalır, girersen kontrol eder
-    System.out.print("Primary phone [" + c.getPhonePrimary() + "]: ");
-    String p1 = scanner.nextLine().trim();
-    if (!p1.isEmpty())
-    {
-        if (!InputValidator.isValidPhone(p1))
+        System.out.print("Primary phone [" + c.getPhonePrimary() + "]: ");
+        String p1 = scanner.nextLine().trim();
+        if (!p1.isEmpty())
         {
-            System.out.println("Invalid phone number. Keeping old primary phone.");
+            if (!InputValidator.isValidPhone(p1))
+            {
+                System.out.println("Invalid phone number. Keeping old primary phone.");
+            }
+            else
+            {
+                c.setPhonePrimary(p1);
+            }
         }
-        else
-        {
-            c.setPhonePrimary(p1);
-        }
-    }
 
-    // Secondary phone – girersen kontrol, boşsa eski kalır / null kalır
-    System.out.print("Secondary phone [" + c.getPhoneSecondary() + "]: ");
-    String p2 = scanner.nextLine().trim();
-    if (!p2.isEmpty())
-    {
-        if (!InputValidator.isValidPhone(p2))
+        System.out.print("Secondary phone [" + c.getPhoneSecondary() + "]: ");
+        String p2 = scanner.nextLine().trim();
+        if (!p2.isEmpty())
         {
-            System.out.println("Invalid phone number. Keeping old secondary phone.");
+            if (!InputValidator.isValidPhone(p2))
+            {
+                System.out.println("Invalid phone number. Keeping old secondary phone.");
+            }
+            else
+            {
+                c.setPhoneSecondary(p2);
+            }
         }
-        else
-        {
-            c.setPhoneSecondary(p2);
-        }
-    }
 
-
-       System.out.print("Email [" + c.getEmail() + "]: ");
-       String em = scanner.nextLine().trim();
+        System.out.print("Email [" + c.getEmail() + "]: ");
+        String em = scanner.nextLine().trim();
         if (!em.isEmpty())
         {
             if (!InputValidator.isValidEmail(em))
             {
-                System.out.println("Invalid e-mail format. Example: user@example.com");
-                System.out.println("Keeping old e-mail value.");
+                System.out.println("Invalid e-mail format. Keeping old value.");
             }
             else
             {
@@ -189,16 +196,13 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             }
         }
 
-
         System.out.print("LinkedIn URL [" + c.getLinkedinUrl() + "]: ");
         String li = scanner.nextLine().trim();
         if (!li.isEmpty())
         {
             if (!InputValidator.isValidLinkedInUrl(li))
             {
-                System.out.println("Invalid LinkedIn URL.");
-                System.out.println("Expected format: https://www.linkedin.com/in/username");
-                System.out.println("Keeping old LinkedIn URL.");
+                System.out.println("Invalid LinkedIn URL. Keeping old value.");
             }
             else
             {
@@ -206,31 +210,28 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             }
         }
 
-
-
         System.out.print("Birth date (YYYY-MM-DD) [" + c.getBirthDate() + "]: ");
         String bd = scanner.nextLine().trim();
         if (!bd.isEmpty())
         {
             if (!InputValidator.isValidIsoDate(bd))
             {
-                System.out.println("Invalid date format. Expected YYYY-MM-DD and a real date.");
-                System.out.println("Keeping old birth date.");
+                System.out.println("Invalid date format. Keeping old value.");
             }
             else
             {
-                c.setBirthDate(LocalDate.parse(bd)); // valid format 
+                c.setBirthDate(LocalDate.parse(bd));
             }
         }
-
-
 
         boolean ok = contactDao.updateContact(c);
         if (ok)
         {
             System.out.println("Contact updated successfully.");
 
-            // 🔙 UNDO kaydı
+            /**
+             * Saves undo action.
+             */
             UndoManager.add(new UndoableCommand()
             {
                 @Override
@@ -245,6 +246,6 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
         {
             System.out.println("Failed to update contact.");
         }
-
     }
 }
+
