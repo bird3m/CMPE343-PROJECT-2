@@ -1,3 +1,6 @@
+/**
+ * Provides login and password update operations for users.
+ */
 public class AuthService
 {
     private final UserDao userDao;
@@ -10,6 +13,10 @@ public class AuthService
     // -------------------------
     // LOGIN
     // -------------------------
+
+    /**
+     * Attempts to authenticate a user with the given username and password.
+     */
     public User login(String username, String plainPassword)
     {
         User user = userDao.findByUsername(username);
@@ -29,35 +36,39 @@ public class AuthService
         return user;
     }
 
-    // Eski (salt yok) + yeni (PBKDF2 + salt) şifreleri doğrulayan ortak fonksiyon
+    /**
+     * Verifies a password using legacy (plain text) or PBKDF2+salt hashing.
+     */
     private boolean verifyPassword(User user, String plainPassword)
     {
         String storedHash = user.getPasswordHash();
-        String salt = user.getPasswordSalt();   // User sınıfında getPasswordSalt() olmalı
+        String salt = user.getPasswordSalt();
 
         if (storedHash == null)
         {
             return false;
         }
 
-        // 1) LEGACY MODE → salt yoksa, DB'deki password_hash düz şifre kabul edilir
         if (salt == null || salt.isBlank())
         {
             return plainPassword.equals(storedHash);
         }
 
-        // 2) NEW MODE → PBKDF2 + salt
-String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
+        String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
         return storedHash.equals(computedHash);
     }
 
     // -------------------------
     // CHANGE PASSWORD
     // -------------------------
-    public boolean changePassword(User currentUser, 
-        String oldPassword,
-        String newPassword1,
-        String newPassword2)
+
+    /**
+     * Changes the user's password after validating old and new values.
+     */
+    public boolean changePassword(User currentUser,
+                                  String oldPassword,
+                                  String newPassword1,
+                                  String newPassword2)
     {
         if (newPassword1 == null || newPassword2 == null || !newPassword1.equals(newPassword2))
         {
@@ -71,7 +82,6 @@ String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
             return false;
         }
 
-        // DB'den güncel user'ı çek (hash/salt dahil)
         User dbUser = userDao.findByUsername(currentUser.getUsername());
         if (dbUser == null)
         {
@@ -79,21 +89,18 @@ String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
             return false;
         }
 
-        // Eski şifreyi doğrula (hem legacy hem hashed kullanıcılar için çalışır)
         if (!verifyPassword(dbUser, oldPassword))
         {
             System.out.println("AuthService: old password is incorrect.");
             return false;
         }
 
-        // Yeni salt + hash üret (BURADA PasswordHasher kullanıyoruz)
         String newSalt = PasswordHasher.generateSalt();
         String newHash = PasswordHasher.hashPassword(newPassword1, newSalt);
         boolean updated = userDao.updatePassword(currentUser.getUsername(), newHash, newSalt);
 
         if (updated)
         {
-            // Memory'deki currentUser'ı da güncelle
             currentUser.setPasswordHash(newHash);
             currentUser.setPasswordSalt(newSalt);
         }
