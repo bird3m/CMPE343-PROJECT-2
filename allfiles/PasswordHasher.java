@@ -9,7 +9,7 @@ import javax.crypto.spec.PBEKeySpec;
 public class PasswordHasher
 {
     /**
-     * Rastgele bir tuz (salt) üretir ve Base64 string olarak döndürür.
+     * Generates a random salt and returns it as a Base64 string.
      */
     public static String generateSalt()
     {
@@ -19,8 +19,8 @@ public class PasswordHasher
     }
 
     /**
-     * Verilen şifreyi ve tuzu (salt) kullanarak PBKDF2WithHmacSHA256 ile hashler.
-     * ManagerMenu'nün çağırdığı metot imzası budur.
+     * Hash using PBKDF2WithHmacSHA256 with the provided password and salt.
+     * This is the method signature called by ManagerMenu.
      */
     public static String hashPassword(String password, String salt)
     {
@@ -40,7 +40,7 @@ public class PasswordHasher
         }
         catch (Exception e)
         {
-            // Genellikle bu hatalar fırlatılmaz, uygulama durdurulur veya loglanır.
+            // Generally, these errors are not thrown; the application is stopped or logged.
             throw new RuntimeException("Hashing failed: " + e.getMessage(), e);
         }
     }
