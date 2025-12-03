@@ -1,8 +1,7 @@
 import java.util.Scanner;
-import java.time.LocalDateTime;
 
 /**
- * Base class for all menus. Stores the logged-in user, input scanner,
+ * Base class for all menus. Holds the logged-in user, input scanner,
  * authentication service and user DAO. Shared across all role menus.
  */
 public abstract class BaseMenu
@@ -10,11 +9,7 @@ public abstract class BaseMenu
     protected final User currentUser;
     protected final Scanner scanner;
     protected final AuthService authService;
-
-    /**
-     * Defining UserDao here is the simplest way to support changePasswordFlow.
-     */
-    protected final UserDao userDao; 
+    protected final UserDao userDao;
 
     protected BaseMenu(User currentUser)
     {
@@ -27,6 +22,8 @@ public abstract class BaseMenu
     public final void start()
     {
         boolean running = true;
+
+        clearScreen(); // ← clears after login success
 
         while (running)
         {
@@ -41,14 +38,13 @@ public abstract class BaseMenu
             String choice = scanner.nextLine().trim();
 
             running = handleChoice(choice);
+
+            clearScreen(); // ← clears after every operation
         }
     }
 
     /**
-     * Helper method used to get input from the user.
-     *
-     * @param prompt text shown to the user
-     * @return trimmed input string
+     * Helper method to get trimmed user input.
      */
     protected String getInputWithPrompt(String prompt)
     {
@@ -56,21 +52,17 @@ public abstract class BaseMenu
         String input = this.scanner.nextLine();
         return input.trim();
     }
-    
-    // Header for each role menu
-    protected abstract void printMenuHeader();
 
-    // Menu options for each role
+    protected abstract void printMenuHeader();
     protected abstract void printMenuOptions();
 
     /**
-     * @param choice user’s menu selection
-     * @return true to continue the menu loop, false to logout
+     * @return true to continue menu loop, false to logout
      */
     protected abstract boolean handleChoice(String choice);
 
     /**
-     * Shared password change flow used by all roles.
+     * Password change flow shared by all menus.
      */
     protected void changePasswordFlow()
     {
@@ -95,5 +87,14 @@ public abstract class BaseMenu
         {
             System.out.println("Password NOT changed (see error message above).");
         }
+    }
+
+    /**
+     * Clears the terminal using ANSI escape codes.
+     */
+    protected void clearScreen()
+    {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }
