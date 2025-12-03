@@ -5,8 +5,16 @@ public class Main
 {
     public static void main(String[] args)
     {
+        // ANİMASYONU ÇALIŞTIR
+        try {
+            Animation.playIntro();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         System.out.println("Starting Contact Management System...");
 
+        // Test DB connection
         try (Connection conn = DatabaseConnection.getConnection())
         {
             if (conn == null)
@@ -22,10 +30,9 @@ public class Main
             System.out.println("Error while closing test connection: " + e.getMessage());
         }
 
-        System.out.println("Opening login menu...\n");
+        System.out.println("\nOpening login menu...\n");
 
         LoginMenu loginMenu = new LoginMenu();
         loginMenu.start();
-
     }
 }
