@@ -1,5 +1,8 @@
 import java.util.Scanner;
 
+/**
+ * Handles the login screen and redirects users to their role-specific menus.
+ */
 public class LoginMenu
 {
     private final AuthService authService;
@@ -11,6 +14,9 @@ public class LoginMenu
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Starts the login loop and processes user choices.
+     */
     public void start()
     {
         while (true)
@@ -22,18 +28,14 @@ public class LoginMenu
 
             String choice = scanner.nextLine().trim();
 
-            // ----------------------
             // ⭐ TERMINATE PROGRAM
-            // ----------------------
             if (choice.equals("9"))
             {
                 System.out.println("\nProgram terminated. Goodbye!");
-                System.exit(0);   // ← tamamen kapatır
+                System.exit(0);
             }
 
-            // ----------------------
             // ⭐ NORMAL LOGIN
-            // ----------------------
             if (!choice.equals("1"))
             {
                 System.out.println("Invalid option.\n");
@@ -52,14 +54,11 @@ public class LoginMenu
             {
                 System.out.println("\nLogin successful.\n");
 
-                // ----------
                 // ROLE MENU
-                // ----------
                 BaseMenu menu = createMenuForRole(user);
-                menu.start();   // → polymorphism
+                menu.start();
 
                 System.out.println("\nReturning to login screen...");
-                continue;
             }
             else
             {
@@ -68,6 +67,9 @@ public class LoginMenu
         }
     }
 
+    /**
+     * Creates and returns the correct menu based on user role.
+     */
     private BaseMenu createMenuForRole(User user)
     {
         switch (user.getRole())

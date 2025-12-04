@@ -1,4 +1,9 @@
 public class Animation
+    /**
+ * Provides simple console-based intro animations for the application,
+ * including frame transitions, screen clearing, and a welcome message.
+ */
+      
 {
     public static void playIntro() throws Exception
     {

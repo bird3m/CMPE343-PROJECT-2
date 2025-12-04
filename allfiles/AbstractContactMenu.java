@@ -11,9 +11,10 @@ public abstract class AbstractContactMenu extends BaseMenu
         this.contactDao = new ContactDao();
     }
 
-    // -------------------------------------------------
-    // 1) List contacts with sorting (Tester/Junior/Senior)
-    // -------------------------------------------------
+    /**
+     * Lists all contacts and allows sorting by the selected field.
+     * Used by Tester, Junior Developer, and Senior Developer roles.
+     */
     protected void listContactsWithSorting()
     {
         System.out.println("\n-- List Contacts --");
@@ -35,9 +36,10 @@ public abstract class AbstractContactMenu extends BaseMenu
         printContactList(contacts);
     }
 
-    // -------------------------------------------------
-    // 2) Search menu (single + multi field) – terminal screenshot formatı
-    // -------------------------------------------------
+    /**
+     * Shows the search menu, including both single-field and multi-field search options.
+     * Matches the terminal screenshot layout required in the project.
+     */
     protected void showSearchMenu()
     {
         while (true)
@@ -148,9 +150,12 @@ public abstract class AbstractContactMenu extends BaseMenu
         }
     }
 
-    // -------------------------------------------------
-    // Ortak çıktı fonksiyonu
-    // -------------------------------------------------
+    /**
+     * Prints a list of contacts to the console.
+     * Used by all search and listing operations.
+     *
+     * @param contacts the list of contacts to print
+     */
     protected void printContactList(List<Contact> contacts)
     {
         if (contacts == null || contacts.isEmpty())
@@ -166,7 +171,13 @@ public abstract class AbstractContactMenu extends BaseMenu
         }
     }
 
-        // ---- Helper: Contact kopyala (undo için) ----
+    /**
+     * Helper function that creates a deep copy of a Contact object.
+     * Used for undo functionality.
+     *
+     * @param src the source contact to copy
+     * @return a copied Contact instance
+     */
     protected Contact copyContact(Contact src)
     {
         if (src == null) return null;
@@ -187,4 +198,3 @@ public abstract class AbstractContactMenu extends BaseMenu
         return c;
     }
 }
-

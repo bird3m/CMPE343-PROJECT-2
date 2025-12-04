@@ -1,10 +1,16 @@
 import java.util.Stack;
 
+/**
+ * Manages undoable commands using a simple stack structure.
+ */
 public class UndoManager
 {
     private static final Stack<UndoableCommand> stack = new Stack<>();
 
-    // Yeni bir undo komutu ekle
+    /**
+     * Adds a new undo command.
+     * @param cmd the command to be stored
+     */
     public static void add(UndoableCommand cmd)
     {
         if (cmd != null)
@@ -13,7 +19,9 @@ public class UndoManager
         }
     }
 
-    // Son işlemi geri al
+    /**
+     * Undoes the last stored command.
+     */
     public static void undoLast()
     {
         if (stack.isEmpty())
@@ -26,7 +34,10 @@ public class UndoManager
         cmd.undo();
     }
 
-    // (Opsiyonel) kaç tane bekleyen undo var görmek istersen
+    /**
+     * Returns the number of pending undo operations.
+     * @return size of undo stack
+     */
     public static int pendingCount()
     {
         return stack.size();

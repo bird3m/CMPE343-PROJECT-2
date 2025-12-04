@@ -1,5 +1,7 @@
 import java.time.LocalDateTime;
-
+/**
+ * Represents a system user.
+ */
 public class User
 {
     private int userId;

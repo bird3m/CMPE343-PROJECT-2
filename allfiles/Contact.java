@@ -1,5 +1,9 @@
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+/**
+ * Represents a contact record with personal information such as name, phone,
+ * email, and timestamps. Used as the main entity in the contact management system.
+ */
 
 public class Contact
 {

@@ -1,11 +1,17 @@
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Entry point of the Contact Management System.
+ */
 public class Main
 {
+    /**
+     * Starts the application, plays intro animation, tests DB connection,
+     * and opens the login menu.
+     */
     public static void main(String[] args)
     {
-        // ANİMASYONU ÇALIŞTIR
         try {
             Animation.playIntro();
         } catch (Exception e) {
@@ -14,7 +20,6 @@ public class Main
 
         System.out.println("Starting Contact Management System...");
 
-        // Test DB connection
         try (Connection conn = DatabaseConnection.getConnection())
         {
             if (conn == null)

@@ -7,6 +7,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Provides database operations for the contacts table.
+ * Includes CRUD functions and various search queries.
+ */
 public class ContactDao
 {
     private static final String BASE_SELECT =
@@ -14,6 +18,9 @@ public class ContactDao
         "phone_primary, phone_secondary, email, linkedin_url, birth_date, " +
         "created_at, updated_at FROM contacts";
 
+    /**
+     * Normalizes the column name for sorting.
+     */
     private String normalizeSortColumn(String sortColumn)
     {
         if (sortColumn == null)
@@ -40,6 +47,9 @@ public class ContactDao
         }
     }
 
+    /**
+     * Normalizes user-provided field names for searching.
+     */
     private String normalizeSearchColumn(String fieldName)
     {
         if (fieldName == null)
@@ -81,6 +91,9 @@ public class ContactDao
         }
     }
 
+    /**
+     * Returns all contacts sorted by a given field.
+     */
     public List<Contact> getAllContacts(String sortColumn, boolean ascending)
     {
         List<Contact> result = new ArrayList<>();
@@ -114,6 +127,9 @@ public class ContactDao
         return result;
     }
 
+    /**
+     * Searches contacts by a single field and keyword.
+     */
     public List<Contact> searchByField(String fieldName, String keyword)
     {
         List<Contact> result = new ArrayList<>();
@@ -155,6 +171,9 @@ public class ContactDao
         return result;
     }
 
+    /**
+     * Finds a contact by its ID.
+     */
     public Contact getById(int contactId)
     {
         Connection conn = DatabaseConnection.getConnection();
@@ -186,6 +205,9 @@ public class ContactDao
         return null;
     }
 
+    /**
+     * Updates a contact record in the database.
+     */
     public boolean updateContact(Contact c)
     {
         Connection conn = DatabaseConnection.getConnection();
@@ -233,65 +255,70 @@ public class ContactDao
         }
     }
 
+    /**
+     * Inserts a new contact and returns the generated ID.
+     */
     public int insertContact(Contact c)
-{
-    Connection conn = DatabaseConnection.getConnection();
-    if (conn == null)
     {
-        System.out.println("ContactDao: Could not obtain database connection.");
-        return -1;
-    }
-
-    String sql =
-        "INSERT INTO contacts " +
-        "(first_name, middle_name, last_name, nickname, phone_primary, " +
-        "phone_secondary, email, linkedin_url, birth_date, created_at, updated_at) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
-
-    try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS))
-    {
-        ps.setString(1, c.getFirstName());
-        ps.setString(2, c.getMiddleName());
-        ps.setString(3, c.getLastName());
-        ps.setString(4, c.getNickname());
-        ps.setString(5, c.getPhonePrimary());
-        ps.setString(6, c.getPhoneSecondary());
-        ps.setString(7, c.getEmail());
-        ps.setString(8, c.getLinkedinUrl());
-
-        if (c.getBirthDate() != null)
+        Connection conn = DatabaseConnection.getConnection();
+        if (conn == null)
         {
-            ps.setDate(9, Date.valueOf(c.getBirthDate()));
-        }
-        else
-        {
-            ps.setDate(9, null);
-        }
-
-        int affected = ps.executeUpdate();
-        if (affected == 0)
-        {
+            System.out.println("ContactDao: Could not obtain database connection.");
             return -1;
         }
 
-        try (ResultSet keys = ps.getGeneratedKeys())
+        String sql =
+            "INSERT INTO contacts " +
+            "(first_name, middle_name, last_name, nickname, phone_primary, " +
+            "phone_secondary, email, linkedin_url, birth_date, created_at, updated_at) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS))
         {
-            if (keys.next())
+            ps.setString(1, c.getFirstName());
+            ps.setString(2, c.getMiddleName());
+            ps.setString(3, c.getLastName());
+            ps.setString(4, c.getNickname());
+            ps.setString(5, c.getPhonePrimary());
+            ps.setString(6, c.getPhoneSecondary());
+            ps.setString(7, c.getEmail());
+            ps.setString(8, c.getLinkedinUrl());
+
+            if (c.getBirthDate() != null)
             {
-                return keys.getInt(1);   // ← YENİ CONTACT ID
+                ps.setDate(9, Date.valueOf(c.getBirthDate()));
             }
+            else
+            {
+                ps.setDate(9, null);
+            }
+
+            int affected = ps.executeUpdate();
+            if (affected == 0)
+            {
+                return -1;
+            }
+
+            try (ResultSet keys = ps.getGeneratedKeys())
+            {
+                if (keys.next())
+                {
+                    return keys.getInt(1); // new contact ID
+                }
+            }
+
+            return -1;
         }
-
-        return -1;
+        catch (SQLException e)
+        {
+            System.out.println("ContactDao: SQL error in insertContact: " + e.getMessage());
+            return -1;
+        }
     }
-    catch (SQLException e)
-    {
-        System.out.println("ContactDao: SQL error in insertContact: " + e.getMessage());
-        return -1;
-    }
-}
 
-
+    /**
+     * Deletes a contact by ID.
+     */
     public boolean deleteContact(int contactId)
     {
         Connection conn = DatabaseConnection.getConnection();
@@ -316,6 +343,9 @@ public class ContactDao
         }
     }
 
+    /**
+     * Maps a ResultSet row to a Contact object.
+     */
     private Contact mapRowToContact(ResultSet rs) throws SQLException
     {
         Contact c = new Contact();
@@ -351,101 +381,103 @@ public class ContactDao
         return c;
     }
 
-    //UPDATE?
+    /**
+     * Searches contacts by first name and birth month.
+     */
     public List<Contact> searchFirstNameAndBirthMonth(String firstName, int month)
-{
-    List<Contact> result = new ArrayList<>();
-
-    Connection conn = DatabaseConnection.getConnection();
-    if (conn == null)
     {
-        System.out.println("ContactDao: Could not obtain database connection.");
+        List<Contact> result = new ArrayList<>();
+
+        Connection conn = DatabaseConnection.getConnection();
+        if (conn == null)
+        {
+            System.out.println("ContactDao: Could not obtain database connection.");
+            return result;
+        }
+
+        String sql = BASE_SELECT +
+            " WHERE first_name = ? " +
+            " AND birth_date IS NOT NULL " +
+            " AND MONTH(birth_date) = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql))
+        {
+            ps.setString(1, firstName);
+            ps.setInt(2, month);
+
+            try (ResultSet rs = ps.executeQuery())
+            {
+                while (rs.next())
+                {
+                    result.add(mapRowToContact(rs));
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("ContactDao: SQL error in searchFirstNameAndBirthMonth: " + e.getMessage());
+        }
+
         return result;
     }
 
-    String sql = BASE_SELECT +
-        " WHERE first_name = ? " +
-        " AND birth_date IS NOT NULL " +
-        " AND MONTH(birth_date) = ?";
-
-    try (PreparedStatement ps = conn.prepareStatement(sql))
-    {
-        ps.setString(1, firstName);
-        ps.setInt(2, month);
-
-        try (ResultSet rs = ps.executeQuery())
-        {
-            while (rs.next())
-            {
-                result.add(mapRowToContact(rs));
-            }
-        }
-    }
-    catch (SQLException e)
-    {
-        System.out.println("ContactDao: SQL error in searchFirstNameAndBirthMonth: " + e.getMessage());
-    }
-
-    return result;
-}
-
-
+    /**
+     * Performs a multi-field search using AND logic.
+     */
     public List<Contact> searchByMultipleFields(List<String> fields, List<String> keywords)
-{
-    List<Contact> result = new ArrayList<>();
-
-    if (fields == null || keywords == null || fields.size() != keywords.size())
     {
-        return result;
-    }
+        List<Contact> result = new ArrayList<>();
 
-    Connection conn = DatabaseConnection.getConnection();
-    if (conn == null)
-    {
-        System.out.println("ContactDao: Could not obtain database connection.");
-        return result;
-    }
-
-    // Dynamic WHERE
-    StringBuilder sql = new StringBuilder(BASE_SELECT + " WHERE ");
-
-    for (int i = 0; i < fields.size(); i++)
-    {
-        String column = normalizeSearchColumn(fields.get(i));
-        if (column == null)
+        if (fields == null || keywords == null || fields.size() != keywords.size())
         {
-            System.out.println("ContactDao: Unsupported field: " + fields.get(i));
-            return new ArrayList<>();
+            return result;
         }
 
-        sql.append(column).append(" LIKE ?");
-        if (i < fields.size() - 1)
+        Connection conn = DatabaseConnection.getConnection();
+        if (conn == null)
         {
-            sql.append(" AND ");
-        }
-    }
-
-    try (PreparedStatement ps = conn.prepareStatement(sql.toString()))
-    {
-        for (int i = 0; i < keywords.size(); i++)
-        {
-            ps.setString(i + 1, "%" + keywords.get(i) + "%");
+            System.out.println("ContactDao: Could not obtain database connection.");
+            return result;
         }
 
-        try (ResultSet rs = ps.executeQuery())
+        StringBuilder sql = new StringBuilder(BASE_SELECT + " WHERE ");
+
+        for (int i = 0; i < fields.size(); i++)
         {
-            while (rs.next())
+            String column = normalizeSearchColumn(fields.get(i));
+            if (column == null)
             {
-                result.add(mapRowToContact(rs));
+                System.out.println("ContactDao: Unsupported field: " + fields.get(i));
+                return new ArrayList<>();
+            }
+
+            sql.append(column).append(" LIKE ?");
+            if (i < fields.size() - 1)
+            {
+                sql.append(" AND ");
             }
         }
-    }
-    catch (SQLException e)
-    {
-        System.out.println("ContactDao: SQL error in searchByMultipleFields: " + e.getMessage());
-    }
 
-    return result;
-}
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString()))
+        {
+            for (int i = 0; i < keywords.size(); i++)
+            {
+                ps.setString(i + 1, "%" + keywords.get(i) + "%");
+            }
 
+            try (ResultSet rs = ps.executeQuery())
+            {
+                while (rs.next())
+                {
+                    result.add(mapRowToContact(rs));
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("ContactDao: SQL error in searchByMultipleFields: " + e.getMessage());
+        }
+
+        return result;
+    }
 }

@@ -3,8 +3,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-// Scanner import'u BaseMenu'da olduğu için ManagerMenu'de tutulabilir ama zorunlu değildir.
-// Bu kodu temiz tutmak için bırakıyorum.
+// Since the Scanner import is in BaseMenu, it can be kept in ManagerMenu, but it is not mandatory.
+// I'm leaving this code as is to keep it clean.
+
 
 public class ManagerMenu extends BaseMenu
 {
@@ -76,7 +77,7 @@ public class ManagerMenu extends BaseMenu
     }
 
     /**
-     * Tüm kullanıcıları listeler
+     * Lists all users
      */
     private void listAllUsers()
     {
@@ -117,7 +118,7 @@ public class ManagerMenu extends BaseMenu
     }
 
     /**
-     * Yeni kullanıcı ekler
+     * Add new users
      */
     private void addNewUser()
     {
@@ -165,7 +166,7 @@ public class ManagerMenu extends BaseMenu
                 return;
             }
 
-            // Role seçimi
+            // Role selection
             System.out.println("Select role:");
             System.out.println("1) TESTER");
             System.out.println("2) JUNIOR_DEVELOPER");
@@ -194,11 +195,11 @@ public class ManagerMenu extends BaseMenu
                     return;
             }
 
-            // PasswordHasher'dan salt ve hash üretimi
+            // Salt and hash generation from PasswordHasher
             String salt = PasswordHasher.generateSalt();
             String passwordHash = PasswordHasher.hashPassword(password, salt); // PasswordHasher'da var olmalı
 
-            // Yeni kullanıcı nesnesi
+            // New user object
             User newUser = new User();
             newUser.setUsername(username);
             newUser.setPasswordHash(passwordHash);
@@ -230,7 +231,7 @@ public class ManagerMenu extends BaseMenu
     }
 
     /**
-     * Mevcut kullanıcıyı günceller
+     * Updates the current user
      */
     private void updateExistingUser()
     {
@@ -382,7 +383,7 @@ public class ManagerMenu extends BaseMenu
     }
 
     /**
-     * Kullanıcıyı siler
+     * Deletes the user
      */
     private void deleteExistingUser()
     {

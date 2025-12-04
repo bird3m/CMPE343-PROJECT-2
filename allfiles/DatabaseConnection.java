@@ -2,6 +2,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Provides a connection to the MySQL database using JDBC.
+ * Returns a Connection object or null if the connection fails.
+ */
 public class DatabaseConnection
 {
     private static final String URL =
@@ -10,18 +14,22 @@ public class DatabaseConnection
     + "&allowPublicKeyRetrieval=true"
     + "&serverTimezone=UTC";
 
-
     private static final String USERNAME = "myuser";
     private static final String PASSWORD = "1234";
 
+    /**
+     * Loads the JDBC driver and establishes a MySQL database connection.
+     *
+     * @return a Connection object if successful, otherwise null
+     */
     public static Connection getConnection() 
     {
         try
         {
-            // JDBC Driver yükle
+            // Load JDBC Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            // Bağlantıyı kur
+            // Establish connection
             return DriverManager.getConnection(URL, USERNAME, PASSWORD);
         }
         catch (ClassNotFoundException e)
