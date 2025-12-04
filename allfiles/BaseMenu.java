@@ -106,4 +106,24 @@ public abstract class BaseMenu
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
+
+    protected String nullToEmpty(String s)
+    {   
+        return (s == null) ? "" : s;
+    }
+
+    protected String fit(String s, int width)
+{
+    if (s == null)
+    {
+        return "";
+    }
+    if (s.length() <= width)
+    {
+        return s;
+    }
+    // width en az 2 olmalı; bizde zaten daha büyük
+    return s.substring(0, width - 1) + "…";
+}
+
 }

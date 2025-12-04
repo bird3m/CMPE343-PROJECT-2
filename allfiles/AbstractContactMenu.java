@@ -163,77 +163,89 @@ protected void printContactList(List<Contact> contacts)
         return;
     }
 
-    // -------------------------------
-    // Column widths
-    // -------------------------------
-    final int ID_WIDTH    = 4;
-    final int FN_WIDTH    = 12;
-    final int LN_WIDTH    = 12;
-    final int PHONE_WIDTH = 12;
-    final int EMAIL_WIDTH = 32;
+    // Daha dar kolon genişlikleri
+    final int ID_W       = 3;
+    final int FIRST_W    = 10;
+    final int LAST_W     = 10;
+    final int NICK_W     = 12;
+    final int PHONE1_W   = 11;
+    final int PHONE2_W   = 11;
+    final int EMAIL_W    = 20;
+    final int BIRTH_W    = 10;   // 2025-12-04
+    final int LINKEDIN_W = 20;
 
-    // -------------------------------
-    // Build total separator length
-    // -------------------------------
-    int totalWidth = 2 + ID_WIDTH
-                   + 3 + FN_WIDTH
-                   + 3 + LN_WIDTH
-                   + 3 + PHONE_WIDTH
-                   + 3 + EMAIL_WIDTH
+    int totalWidth = 2 + ID_W
+                   + 3 + FIRST_W
+                   + 3 + LAST_W
+                   + 3 + NICK_W
+                   + 3 + PHONE1_W
+                   + 3 + PHONE2_W
+                   + 3 + EMAIL_W
+                   + 3 + BIRTH_W
+                   + 3 + LINKEDIN_W
                    + 2;
 
-    String separator = "-".repeat(totalWidth);
+    String separator = "─".repeat(totalWidth);
 
     System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
-
-    // -------------------------------
-    // HEADER (colored)
-    // -------------------------------
     System.out.printf(
-            ConsoleColors.YELLOW +
-            "| %-" + ID_WIDTH + "s"
-          + " | %-" + FN_WIDTH + "s"
-          + " | %-" + LN_WIDTH + "s"
-          + " | %-" + PHONE_WIDTH + "s"
-          + " | " + ConsoleColors.YELLOW + "%-" + EMAIL_WIDTH + "s"
-          + ConsoleColors.CYAN + " |\n" +
-            ConsoleColors.RESET,
-            "ID", "First Name", "Last Name", "Phone", "Email"
+        ConsoleColors.BLUE +
+        "| %-" + ID_W       + "s" +
+        " | %-" + FIRST_W   + "s" +
+        " | %-" + LAST_W    + "s" +
+        " | %-" + NICK_W    + "s" +
+        " | %-" + PHONE1_W  + "s" +
+        " | %-" + PHONE2_W  + "s" +
+        " | %-" + EMAIL_W   + "s" +
+        " | %-" + BIRTH_W   + "s" +
+        " | %-" + LINKEDIN_W+ "s |\n" +
+        ConsoleColors.RESET,
+        "ID", "First", "Last", "Nick",
+        "Phone 1", "Phone 2",
+        "Email", "Birth Date", "LinkedIn"
     );
-
     System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
 
-    // -------------------------------
-    // ROWS 
-    // -------------------------------
-    int rowIndex = 0;
-
+    int row = 0;
     for (Contact c : contacts)
     {
-        String rowColor = (rowIndex % 2 == 0)
-                ? ConsoleColors.WHITE
-                : ConsoleColors.CYAN;
+        String rowColor = (row % 2 == 0)
+            ? ConsoleColors.WHITE
+            : ConsoleColors.RESET;
+
+        String birthStr = (c.getBirthDate() != null)
+            ? c.getBirthDate().toString()
+            : "";
 
         System.out.printf(
-                rowColor +
-                "| %-" + ID_WIDTH + "s"
-              + " | %-" + FN_WIDTH + "s"
-              + " | %-" + LN_WIDTH + "s"
-              + " | %-" + PHONE_WIDTH + "s"
-              + " | %-" + EMAIL_WIDTH + "s |\n" +
-                ConsoleColors.RESET,
-                c.getContactId(),
-                c.getFirstName(),
-                c.getLastName(),
-                c.getPhonePrimary(),
-                c.getEmail()
+            rowColor +
+            "| %-" + ID_W       + "d" +
+            " | %-" + FIRST_W   + "s" +
+            " | %-" + LAST_W    + "s" +
+            " | %-" + NICK_W    + "s" +
+            " | %-" + PHONE1_W  + "s" +
+            " | %-" + PHONE2_W  + "s" +
+            " | %-" + EMAIL_W   + "s" +
+            " | %-" + BIRTH_W   + "s" +
+            " | %-" + LINKEDIN_W+ "s |\n" +
+            ConsoleColors.RESET,
+            c.getContactId(),
+            fit(nullToEmpty(c.getFirstName()),  FIRST_W),
+            fit(nullToEmpty(c.getLastName()),   LAST_W),
+            fit(nullToEmpty(c.getNickname()),   NICK_W),
+            fit(nullToEmpty(c.getPhonePrimary()),  PHONE1_W),
+            fit(nullToEmpty(c.getPhoneSecondary()),PHONE2_W),
+            fit(nullToEmpty(c.getEmail()),      EMAIL_W),
+            fit(birthStr,                       BIRTH_W),
+            fit(nullToEmpty(c.getLinkedinUrl()),LINKEDIN_W)
         );
 
-        rowIndex++;
+        row++;
     }
 
-    System.out.println(ConsoleColors.GRAY + separator + ConsoleColors.RESET);
+    System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
 }
+
 
 
 
