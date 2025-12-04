@@ -252,7 +252,8 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             System.out.println("Failed to update contact.");
         }
     }
-   /**
+
+    /**
      * Adds a new contact.
      */
     private void addContactMenu()

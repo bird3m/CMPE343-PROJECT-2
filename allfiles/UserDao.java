@@ -33,7 +33,7 @@ public class UserDao
         "DELETE FROM users WHERE user_id = ?";
 
     /**
-     * Username ile kullanıcı bulma
+     * Finding users by username
      */
     public User findByUsername(String username)
     {
@@ -68,7 +68,7 @@ public class UserDao
     }
 
     /**
-     * ID ile kullanıcı bulma
+     * Finding users by ID
      */
     public User findById(int userId)
     {
@@ -103,7 +103,7 @@ public class UserDao
     }
 
     /**
-     * Tüm kullanıcıları listeleme
+     * List all users
      */
     public List<User> findAll()
     {
@@ -138,7 +138,7 @@ public class UserDao
     }
 
     /**
-     * Yeni kullanıcı ekleme
+     * Add new user
      */
     public boolean save(User user)
     {
@@ -174,7 +174,7 @@ public class UserDao
     }
 
     /**
-     * Kullanıcı güncelleme
+     * User update
      */
     public boolean update(User user)
     {
@@ -208,7 +208,7 @@ public class UserDao
     }
 
     /**
-     * Kullanıcı silme
+     * Delete user
      */
     public boolean delete(int userId)
     {
@@ -236,7 +236,7 @@ public class UserDao
     }
 
     /**
-     * Şifre güncelleme
+     * Password update
      */
     public boolean updatePassword(String username, String newHash, String newSalt)
     {
@@ -266,7 +266,7 @@ public class UserDao
     }
 
     /**
-     * ResultSet'ten User objesi oluşturma (yardımcı metod)
+     * Creating a User object from a ResultSet (helper method)
      */
     private User extractUserFromResultSet(ResultSet rs) throws SQLException
     {

@@ -248,3 +248,4 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
         }
     }
 }
+

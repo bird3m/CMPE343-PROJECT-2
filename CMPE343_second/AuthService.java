@@ -28,25 +28,32 @@ public class AuthService
 
         return user;
     }
-
-    // Eski (salt yok) + yeni (PBKDF2 + salt) şifreleri doğrulayan ortak fonksiyon
+ /**
+     * Common function that verifies both old (no salt) and new (PBKDF2 + salt) passwords.
+     * Note: User class must include getPasswordSalt().
+     */
     private boolean verifyPassword(User user, String plainPassword)
     {
         String storedHash = user.getPasswordHash();
-        String salt = user.getPasswordSalt();   // User sınıfında getPasswordSalt() olmalı
+        String salt = user.getPasswordSalt();    
 
         if (storedHash == null)
         {
             return false;
         }
 
-        // 1) LEGACY MODE → salt yoksa, DB'deki password_hash düz şifre kabul edilir
+        /**
+         * LEGACY MODE → if salt is missing, password_hash is treated as plain password.
+         */
         if (salt == null || salt.isBlank())
         {
             return plainPassword.equals(storedHash);
         }
 
-        // 2) NEW MODE → PBKDF2 + salt
+       
+        /**
+         * NEW MODE → PBKDF2 + salt.
+         */
 String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
         return storedHash.equals(computedHash);
     }
@@ -71,29 +78,36 @@ String computedHash = PasswordHasher.hashPassword(plainPassword, salt);
             return false;
         }
 
-        // DB'den güncel user'ı çek (hash/salt dahil)
+         /**
+         * Fetch the most recent user entry from DB (including hash/salt).
+         */
         User dbUser = userDao.findByUsername(currentUser.getUsername());
         if (dbUser == null)
         {
             System.out.println("AuthService: current user not found in DB.");
             return false;
         }
-
-        // Eski şifreyi doğrula (hem legacy hem hashed kullanıcılar için çalışır)
+       /**
+         * Verify old password (works for both legacy and hashed users).
+         */
         if (!verifyPassword(dbUser, oldPassword))
         {
             System.out.println("AuthService: old password is incorrect.");
             return false;
         }
 
-        // Yeni salt + hash üret (BURADA PasswordHasher kullanıyoruz)
+        /**
+         * Generate new salt + hash (using PasswordHasher).
+         */
         String newSalt = PasswordHasher.generateSalt();
 String newHash = PasswordHasher.hashPassword(newPassword1, newSalt);
         boolean updated = userDao.updatePassword(currentUser.getUsername(), newHash, newSalt);
 
         if (updated)
         {
-            // Memory'deki currentUser'ı da güncelle
+           /**
+             * Update the in-memory currentUser.
+             */
             currentUser.setPasswordHash(newHash);
             currentUser.setPasswordSalt(newSalt);
         }

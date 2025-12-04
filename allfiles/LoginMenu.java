@@ -28,14 +28,14 @@ public class LoginMenu
 
             String choice = scanner.nextLine().trim();
 
-            // ⭐ TERMINATE PROGRAM
+            // TERMINATE PROGRAM
             if (choice.equals("9"))
             {
                 System.out.println("\nProgram terminated. Goodbye!");
                 System.exit(0);
             }
 
-            // ⭐ NORMAL LOGIN
+            //NORMAL LOGIN
             if (!choice.equals("1"))
             {
                 System.out.println("Invalid option.\n");

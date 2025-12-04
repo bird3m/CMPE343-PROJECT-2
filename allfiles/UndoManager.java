@@ -43,3 +43,4 @@ public class UndoManager
         return stack.size();
     }
 }
+
