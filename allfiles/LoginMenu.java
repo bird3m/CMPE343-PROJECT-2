@@ -21,10 +21,11 @@ public class LoginMenu
     {
         while (true)
         {
-            System.out.println("\n=== LOGIN SCREEN ===");
+            // BAŞLIĞI MAVİ VƏ QALIN etdik
+            System.out.println(BaseMenu.BLUE + BaseMenu.BOLD + "\n=== LOGIN SCREEN ===" + BaseMenu.RESET);
             System.out.println("1) Login");
-            System.out.println("9) Terminate Program");
-            System.out.print("Choice: ");
+            System.out.println(BaseMenu.RED + "9) Terminate Program" + BaseMenu.RESET); // ÇIXIŞI QIRMIZI
+            System.out.print(BaseMenu.CYAN + "Choice: " + BaseMenu.RESET); // Seçim prompt-u GÖY
 
             String choice = scanner.nextLine().trim();
 
@@ -38,7 +39,8 @@ public class LoginMenu
             //NORMAL LOGIN
             if (!choice.equals("1"))
             {
-                System.out.println("Invalid option.\n");
+                // Səhv mesajı QIRMIZI rəngdə
+                System.out.println(BaseMenu.RED + "Invalid option.\n" + BaseMenu.RESET);
                 continue;
             }
 
@@ -52,7 +54,8 @@ public class LoginMenu
 
             if (user != null)
             {
-                System.out.println("\nLogin successful.\n");
+                // Uğur mesajı YAŞIL rəngdə
+                System.out.println(BaseMenu.GREEN + "\nLogin successful." + BaseMenu.RESET + "\n");
 
                 // ROLE MENU
                 BaseMenu menu = createMenuForRole(user);
@@ -62,7 +65,8 @@ public class LoginMenu
             }
             else
             {
-                System.out.println("Invalid username or password.\n");
+                // Səhv mesajı QIRMIZI rəngdə
+                System.out.println(BaseMenu.RED + "Invalid username or password.\n" + BaseMenu.RESET);
             }
         }
     }

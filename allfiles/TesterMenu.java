@@ -17,7 +17,8 @@ public class TesterMenu extends AbstractContactMenu
     @Override
     protected void printMenuHeader()
     {
-        System.out.println("=== TESTER MENU ===");
+        // Başlığı MAVİ və QALIN etdik
+        System.out.println(BaseMenu.BLUE + BaseMenu.BOLD + "=== TESTER MENU ===" + BaseMenu.RESET);
     }
    /**
      * Prints available Tester menu options.
@@ -28,7 +29,8 @@ public class TesterMenu extends AbstractContactMenu
         System.out.println("1) Change password");
         System.out.println("2) List all contacts (with sorting)");
         System.out.println("3) Search contacts");
-        System.out.println("0) Logout");
+        // Logout seçimini QIRMIZI etdik
+        System.out.println(BaseMenu.RED + "0) Logout" + BaseMenu.RESET);
     }
     /**
      * Handles the user's menu selection.
@@ -39,7 +41,7 @@ public class TesterMenu extends AbstractContactMenu
         switch (choice)
         {
             case "1":
-                changePasswordFlow();              // From BaseMenu
+                changePasswordFlow();              // From BaseMenu (artıq rənglidir)
                 return true;
 
             case "2":
@@ -52,11 +54,12 @@ public class TesterMenu extends AbstractContactMenu
 
 
             case "0":
-                System.out.println("Logging out...");
+                System.out.println(BaseMenu.RED + "Logging out..." + BaseMenu.RESET);
                 return false;                     // The loop ends → Returns to LoginMenu
 
             default:
-                System.out.println("Invalid option, try again.");
+                // Səhv seçimi QIRMIZI etdik
+                System.out.println(BaseMenu.RED + "Invalid option, try again." + BaseMenu.RESET);
                 return true;
         }
     }

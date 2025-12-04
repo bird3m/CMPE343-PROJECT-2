@@ -3,7 +3,7 @@ public class Animation
  * Provides simple console-based intro animations for the application,
  * including frame transitions, screen clearing, and a welcome message.
  */
-      
+
 {
     public static void playIntro() throws Exception
     {
@@ -21,21 +21,60 @@ public class Animation
 
     private static void clear()
     {
+        
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
-    private static void printWelcome()
-    {
-        System.out.println("""
-                
-                =======================================
-                          W E L C O M E  
-                       GROUP 4 CONTACT SYSTEM
-                =======================================
-                
-                """);
-    }
+private static void printWelcome()
+{
+    // ####################################################################
+    // # 1. RƏQS EDƏN FİQURLAR (Qeyd: Bu hissəni ən sonda verilən koddan götürdüm)
+    // ####################################################################
+        // RENK KODU
+        System.out.print("\033[0;35m\033[1m");
+
+    System.out.println(" o              o                 o                                     ");
+    System.out.println(" <|>            <|>               <|>                                    ");
+    System.out.println(" / \\            / \\               / \\                                    ");
+    System.out.println(" \\o/            \\o/    o__  __o   \\o/      __o__    o__ __o    \\o__ __o__ __o     o__  __o  ");
+    System.out.println("  |              |    /v      |>   |      />  \\    /v     v\\    |     |     |>   /v      |>  ");
+    System.out.println(" < >            < >  />      //   / \\   o/        />       <\\  / \\   / \\   / \\  />      //  ");
+    System.out.println("  \\o    o/\\o    o/   \\o    o/     \\o/  <|         \\         /  \\o/   \\o/   \\o/  \\o    o/    ");
+    System.out.println("   v\\  /v  v\\  /v     v\\  /v __o   |    \\ \\          o       o    |     |     |    v\\  /v __o  ");
+    System.out.println("    <\\/>    <\\/>       <\\/> __/>  / \\    _\\o__</   <\\__ __/>   / \\   / \\   / \\    <\\/> __/> ");
+
+    System.out.println(); // Boşluq
+
+    // ####################################################################
+    // # 2. KİÇİK FİGLET ASCII ART (Sarı Rəngdə)
+    // ####################################################################
+        // RENK KODU
+        System.out.print(BaseMenu.GREEN + BaseMenu.BOLD);
+
+    System.out.println(" _____ ____  ____  _     ____     _ ");
+    System.out.println("/  __//  __\\/  _ \\/ \\ /\\/  __\\ /\\ / |");
+    System.out.println("| |  _|  \\/|| / \\|| | |||  \\/| \\_\\| |");
+    System.out.println("| |_//|    /| \\_/|| \\_/||  __/   | |");
+    System.out.println("\\____\\\\_/\\_\\\\____/\\____/\\_/      \\_|");
+    System.out.println("                                     "); 
+
+    System.out.println(); // Boşluq
+
+    // ####################################################################
+    // # 3. SON WELCOME ASCII ART (Mavi Rəngdə)
+    System.out.print(BaseMenu.BLUE + BaseMenu.BOLD); // MAVİ VƏ QALIN
+    // ####################################################################
+    // RENK KODU
+    System.out.println("▄▖   ▗      ▗         ▗     ");
+    System.out.println("▌ ▛▌▛▌▜▘▀▌▛▘▜▘  ▛▘▌▌▛▘▜▘█▌▛▛▌");
+    System.out.println("▙▖▙▌▌▌▐▖█▌▙▖▐▖  ▄▌▙▌▄▌▐▖▙▖▌▌▌");
+    System.out.println("                  ▄▌         ");
+
+    System.out.println(" "); // Boşluq
+    System.out.println();
+}
+
 
     
     private static final String[] FRAMES = new String[] {

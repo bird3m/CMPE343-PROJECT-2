@@ -13,32 +13,37 @@ public class Main
     public static void main(String[] args)
     {
         try {
+            // YENİ RƏNGLİ ASCII ART BURADAN ÇAP OLUNUR (Animation.java-dan)
             Animation.playIntro();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        System.out.println("Starting Contact Management System...");
+        // Başlanğıc mesajı SARI rəngdə
+        System.out.println(BaseMenu.YELLOW + "Starting Contact Management System..." + BaseMenu.RESET);
 
         try (Connection conn = DatabaseConnection.getConnection())
         {
             if (conn == null)
             {
-                System.out.println("Database connection failed (null returned). Please check MySQL settings.");
+                // Səhv mesajı QIRMIZI rəngdə
+                System.out.println(BaseMenu.RED + "Database connection failed (null returned). Please check MySQL settings." + BaseMenu.RESET);
                 return;
             }
 
-            System.out.println("Database connection successful.");
+            // Uğur mesajı YAŞIL rəngdə
+            System.out.println(BaseMenu.GREEN + "Database connection successful." + BaseMenu.RESET);
         }
         catch (SQLException e)
         {
-            System.out.println("Error while closing test connection: " + e.getMessage());
+            // Xəta mesajı QIRMIZI rəngdə
+            System.out.println(BaseMenu.RED + "Error while closing test connection: " + e.getMessage() + BaseMenu.RESET);
         }
 
-        System.out.println("\nOpening login menu...\n");
+        // Menyu açılış mesajı GÖY rəngdə
+        System.out.println(BaseMenu.CYAN + "\nOpening login menu...\n" + BaseMenu.RESET);
 
         LoginMenu loginMenu = new LoginMenu();
         loginMenu.start();
     }
 }
-
