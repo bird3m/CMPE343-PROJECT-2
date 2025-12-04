@@ -150,26 +150,92 @@ public abstract class AbstractContactMenu extends BaseMenu
         }
     }
 
-    /**
-     * Prints a list of contacts to the console.
-     * Used by all search and listing operations.
-     *
-     * @param contacts the list of contacts to print
-     */
-    protected void printContactList(List<Contact> contacts)
-    {
-        if (contacts == null || contacts.isEmpty())
-        {
-            System.out.println("No contacts found.");
-            return;
-        }
+/**
+ * 
+ * @param contacts
+ */
 
-        System.out.println("\n--- CONTACTS ---");
-        for (Contact c : contacts)
-        {
-            System.out.println(c);
-        }
+protected void printContactList(List<Contact> contacts)
+{
+    if (contacts == null || contacts.isEmpty())
+    {
+        System.out.println("No contacts found.");
+        return;
     }
+
+    // -------------------------------
+    // Column widths
+    // -------------------------------
+    final int ID_WIDTH    = 4;
+    final int FN_WIDTH    = 12;
+    final int LN_WIDTH    = 12;
+    final int PHONE_WIDTH = 12;
+    final int EMAIL_WIDTH = 32;
+
+    // -------------------------------
+    // Build total separator length
+    // -------------------------------
+    int totalWidth = 2 + ID_WIDTH
+                   + 3 + FN_WIDTH
+                   + 3 + LN_WIDTH
+                   + 3 + PHONE_WIDTH
+                   + 3 + EMAIL_WIDTH
+                   + 2;
+
+    String separator = "-".repeat(totalWidth);
+
+    System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
+
+    // -------------------------------
+    // HEADER (colored)
+    // -------------------------------
+    System.out.printf(
+            ConsoleColors.YELLOW +
+            "| %-" + ID_WIDTH + "s"
+          + " | %-" + FN_WIDTH + "s"
+          + " | %-" + LN_WIDTH + "s"
+          + " | %-" + PHONE_WIDTH + "s"
+          + " | " + ConsoleColors.YELLOW + "%-" + EMAIL_WIDTH + "s"
+          + ConsoleColors.CYAN + " |\n" +
+            ConsoleColors.RESET,
+            "ID", "First Name", "Last Name", "Phone", "Email"
+    );
+
+    System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
+
+    // -------------------------------
+    // ROWS 
+    // -------------------------------
+    int rowIndex = 0;
+
+    for (Contact c : contacts)
+    {
+        String rowColor = (rowIndex % 2 == 0)
+                ? ConsoleColors.WHITE
+                : ConsoleColors.CYAN;
+
+        System.out.printf(
+                rowColor +
+                "| %-" + ID_WIDTH + "s"
+              + " | %-" + FN_WIDTH + "s"
+              + " | %-" + LN_WIDTH + "s"
+              + " | %-" + PHONE_WIDTH + "s"
+              + " | %-" + EMAIL_WIDTH + "s |\n" +
+                ConsoleColors.RESET,
+                c.getContactId(),
+                c.getFirstName(),
+                c.getLastName(),
+                c.getPhonePrimary(),
+                c.getEmail()
+        );
+
+        rowIndex++;
+    }
+
+    System.out.println(ConsoleColors.GRAY + separator + ConsoleColors.RESET);
+}
+
+
 
     /**
      * Helper function that creates a deep copy of a Contact object.
