@@ -246,11 +246,30 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         if (ok)
         {
             System.out.println("Contact updated successfully.");
+
+            //Undo
+            UndoManager.add(new UndoableCommand()
+            {
+                @Override
+                public void undo()
+                {
+                    boolean reverted = contactDao.updateContact(before);
+                    if (reverted)
+                    {
+                        System.out.println("Undo: contact reverted to previous state.");
+                    }
+                    else
+                    {
+                        System.out.println("Undo failed: could not revert contact.");
+                    }
+                }
+            });
         }
-        else
-        {
-            System.out.println("Failed to update contact.");
-        }
+else
+{
+    System.out.println("Failed to update contact.");
+}
+
     }
 
     /**
@@ -383,75 +402,85 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         c.setEmail(email);
 
 
-    String linkedIn;
-    while (true)
-    {
-        System.out.print("LinkedIn URL (optional, ENTER to skip)\n"
-            + "Expected format: https://www.linkedin.com/in/username\n"
-            + "LinkedIn: ");
-        linkedIn = scanner.nextLine().trim();
-
-        if (linkedIn.isEmpty())
+        String linkedIn;
+        while (true)
         {
-            // The user wants to leave it blank → null
-            linkedIn = null;
+            System.out.print("LinkedIn URL (optional, ENTER to skip)\n"
+                + "Expected format: https://www.linkedin.com/in/username\n"
+                + "LinkedIn: ");
+            linkedIn = scanner.nextLine().trim();
+
+            if (linkedIn.isEmpty())
+            {
+                // The user wants to leave it blank → null
+                linkedIn = null;
+                break;
+            }
+
+            if (!InputValidator.isValidLinkedInUrl(linkedIn))
+            {
+                System.out.println("Invalid LinkedIn URL. Please follow the format above.");
+                continue;
+            }
+
             break;
         }
+        c.setLinkedinUrl(linkedIn);
 
-        if (!InputValidator.isValidLinkedInUrl(linkedIn))
+
+        LocalDate birthDate;
+        while (true)
         {
-            System.out.println("Invalid LinkedIn URL. Please follow the format above.");
-            continue;
+            System.out.print("Birth date (YYYY-MM-DD): ");
+            String bd = scanner.nextLine().trim();
+
+            if (!InputValidator.isValidIsoDate(bd))
+            {
+                System.out.println("Invalid date format. Expected YYYY-MM-DD and a real date.");
+                continue;
+            }
+
+            birthDate = LocalDate.parse(bd);
+            break;
         }
+        
+        c.setBirthDate(birthDate);
 
-        break;
-    }
-    c.setLinkedinUrl(linkedIn);
-
-
-    LocalDate birthDate;
-    while (true)
-    {
-        System.out.print("Birth date (YYYY-MM-DD): ");
-        String bd = scanner.nextLine().trim();
-
-        if (!InputValidator.isValidIsoDate(bd))
-        {
-            System.out.println("Invalid date format. Expected YYYY-MM-DD and a real date.");
-            continue;
-        }
-
-        birthDate = LocalDate.parse(bd);
-        break;
-    }
-    
-    c.setBirthDate(birthDate);
-
-    int newId = contactDao.insertContact(c);
+        int newId = contactDao.insertContact(c);
 
         if (newId > 0)
         {
             System.out.println("Contact inserted successfully.");
 
-            // UNDO RECORD = Delete the added contact
+            // ADD için UNDO: yeni eklenen contact'ı sil
+            final int insertedId = newId;
+
             UndoManager.add(new UndoableCommand()
             {
                 @Override
                 public void undo()
                 {
-                    contactDao.deleteContact(newId);
-                    System.out.println("Undo: added contact removed.");
+                    boolean deleted = contactDao.deleteContact(insertedId);
+                    if (deleted)
+                    {
+                        System.out.println("Undo: newly inserted contact removed. ID = " + insertedId);
+                    }
+                    else
+                    {
+                        System.out.println("Undo failed: could not remove newly inserted contact.");
+                    }
                 }
             });
         }
         else
         {
             System.out.println("Failed to insert contact.");
-        }
+        }   
+
 
     }
     /**
-     * Adds a new contact.
+     * Deletes a contact by its ID.
      */
     private void deleteContactMenu()
     {
@@ -469,8 +498,7 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
-        // 1) Back up your contacts before deleting them
-        Contact backup = contactDao.getById(id);
+        Contact backup = contactDao.getById(id);  
 
         if (backup == null)
         {
@@ -478,20 +506,30 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
             return;
         }
 
-        // 2) Deletion process
+        
         boolean ok = contactDao.deleteContact(id);
         if (ok)
         {
             System.out.println("Contact deleted.");
 
-            // 3) UNDO record, backup contact will be added back
+            // UNDO 
             UndoManager.add(new UndoableCommand()
             {
                 @Override
                 public void undo()
                 {
-                    contactDao.insertContact(backup);
-                    System.out.println("Undo: deleted contact restored.");
+                    boolean restored = contactDao.restoreContactWithSameId(backup);
+                    if (restored)
+                    {
+                        System.out.println(
+                            "Undo: deleted contact restored with same ID = " 
+                            + backup.getContactId()
+                        );
+                    }
+                    else
+                    {
+                        System.out.println("Undo failed: could not restore contact.");
+                    }
                 }
             });
         }
@@ -499,6 +537,6 @@ public class SeniorDeveloperMenu extends AbstractContactMenu
         {
             System.out.println("Failed to delete contact (maybe not found).");
         }
-
     }
+
 }

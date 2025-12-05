@@ -159,29 +159,31 @@ public abstract class AbstractContactMenu extends BaseMenu
  * Prints and displays the contacts list.
  * @param contacts List of contacts.
  */
-
 protected void printContactList(List<Contact> contacts)
 {
     clearScreen();
+
     if (contacts == null || contacts.isEmpty())
     {
         System.out.println("No contacts found.");
         return;
     }
 
-   
+    // ---- column widths ----
     final int ID_W       = 3;
     final int FIRST_W    = 10;
+    final int MIDDLE_W   = 10;   // NEW
     final int LAST_W     = 10;
     final int NICK_W     = 12;
     final int PHONE1_W   = 11;
     final int PHONE2_W   = 11;
     final int EMAIL_W    = 20;
-    final int BIRTH_W    = 10;   
+    final int BIRTH_W    = 10;
     final int LINKEDIN_W = 20;
 
     int totalWidth = 2 + ID_W
                    + 3 + FIRST_W
+                   + 3 + MIDDLE_W   // NEW
                    + 3 + LAST_W
                    + 3 + NICK_W
                    + 3 + PHONE1_W
@@ -193,11 +195,13 @@ protected void printContactList(List<Contact> contacts)
 
     String separator = "─".repeat(totalWidth);
 
+    // ---- header ----
     System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
     System.out.printf(
         ConsoleColors.BLUE +
         "| %-" + ID_W       + "s" +
         " | %-" + FIRST_W   + "s" +
+        " | %-" + MIDDLE_W  + "s" +   // NEW
         " | %-" + LAST_W    + "s" +
         " | %-" + NICK_W    + "s" +
         " | %-" + PHONE1_W  + "s" +
@@ -206,12 +210,13 @@ protected void printContactList(List<Contact> contacts)
         " | %-" + BIRTH_W   + "s" +
         " | %-" + LINKEDIN_W+ "s |\n" +
         ConsoleColors.RESET,
-        "ID", "First", "Last", "Nick",
-        "Phone 1", "Phone 2",
+        "ID", "First", "Middle", "Last",      // Middle eklendi
+        "Nick", "Phone 1", "Phone 2",
         "Email", "Birth Date", "LinkedIn"
     );
     System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
 
+    // ---- rows ----
     int row = 0;
     for (Contact c : contacts)
     {
@@ -227,6 +232,7 @@ protected void printContactList(List<Contact> contacts)
             rowColor +
             "| %-" + ID_W       + "d" +
             " | %-" + FIRST_W   + "s" +
+            " | %-" + MIDDLE_W  + "s" +   // NEW
             " | %-" + LAST_W    + "s" +
             " | %-" + NICK_W    + "s" +
             " | %-" + PHONE1_W  + "s" +
@@ -236,14 +242,15 @@ protected void printContactList(List<Contact> contacts)
             " | %-" + LINKEDIN_W+ "s |\n" +
             ConsoleColors.RESET,
             c.getContactId(),
-            fit(nullToEmpty(c.getFirstName()),  FIRST_W),
-            fit(nullToEmpty(c.getLastName()),   LAST_W),
-            fit(nullToEmpty(c.getNickname()),   NICK_W),
-            fit(nullToEmpty(c.getPhonePrimary()),  PHONE1_W),
-            fit(nullToEmpty(c.getPhoneSecondary()),PHONE2_W),
-            fit(nullToEmpty(c.getEmail()),      EMAIL_W),
-            fit(birthStr,                       BIRTH_W),
-            fit(nullToEmpty(c.getLinkedinUrl()),LINKEDIN_W)
+            fit(nullToEmpty(c.getFirstName()),   FIRST_W),
+            fit(nullToEmpty(c.getMiddleName()),  MIDDLE_W),  // NEW
+            fit(nullToEmpty(c.getLastName()),    LAST_W),
+            fit(nullToEmpty(c.getNickname()),    NICK_W),
+            fit(nullToEmpty(c.getPhonePrimary()),   PHONE1_W),
+            fit(nullToEmpty(c.getPhoneSecondary()), PHONE2_W),
+            fit(nullToEmpty(c.getEmail()),       EMAIL_W),
+            fit(birthStr,                        BIRTH_W),
+            fit(nullToEmpty(c.getLinkedinUrl()), LINKEDIN_W)
         );
 
         row++;

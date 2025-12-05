@@ -21,24 +21,33 @@ public class LoginMenu
     {
         while (true)
         {
-            System.out.println("\n=== LOGIN SCREEN ===");
+
+            System.out.println(BaseMenu.BLUE + BaseMenu.BOLD + "\n=== LOGIN SCREEN ===" + BaseMenu.RESET);
             System.out.println("1) Login");
-            System.out.println("9) Terminate Program");
-            System.out.print("Choice: ");
+            System.out.println(BaseMenu.RED + "9) Terminate Program" + BaseMenu.RESET); 
+            System.out.print(BaseMenu.CYAN + "Choice: " + BaseMenu.RESET); 
 
             String choice = scanner.nextLine().trim();
 
             // TERMINATE PROGRAM
             if (choice.equals("9"))
             {
-                System.out.println("\nProgram terminated. Goodbye!");
+                try
+                {
+                    Animation.playExitAnimation();
+                }
+                catch (Exception e)
+                {
+                    System.out.println("Exit animation failed: " + e.getMessage());
+                }
                 System.exit(0);
             }
 
             //NORMAL LOGIN
             if (!choice.equals("1"))
             {
-                System.out.println("Invalid option.\n");
+                
+                System.out.println(BaseMenu.RED + "Invalid option.\n" + BaseMenu.RESET);
                 continue;
             }
 
@@ -52,9 +61,10 @@ public class LoginMenu
 
             if (user != null)
             {
-                System.out.println("\nLogin successful.\n");
+        
+                System.out.println(BaseMenu.GREEN + "\nLogin successful." + BaseMenu.RESET + "\n");
 
-                // ROLE MENU
+                
                 BaseMenu menu = createMenuForRole(user);
                 menu.start();
 
@@ -62,7 +72,7 @@ public class LoginMenu
             }
             else
             {
-                System.out.println("Invalid username or password.\n");
+                System.out.println(BaseMenu.RED + "Invalid username or password.\n" + BaseMenu.RESET);
             }
         }
     }

@@ -3,11 +3,10 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+// Since the Scanner import is in BaseMenu, it can be kept in ManagerMenu, but it is not mandatory.
+// I'm leaving this code as is to keep it clean.
 
 
-/**
- * Manager menu class, does all the operations that the manager user should do. Inherits from the Base Menu.
- */
 public class ManagerMenu extends BaseMenu
 {
     private final ContactDao contactDao;
@@ -44,7 +43,7 @@ public class ManagerMenu extends BaseMenu
         switch (choice)
         {
             case "1":
-                changePasswordFlow(); 
+                changePasswordFlow(); // BaseMenu'dan çağrılır
                 return true;
 
             case "2":
@@ -512,81 +511,4 @@ public class ManagerMenu extends BaseMenu
             System.out.println("  No birth date information available.");
         }
     }
-
-        /**
-     * Pretty-prints user list as a colored table.
-     */
-    private void printUserTable(List<User> users)
-    {
-        final int ID_WIDTH       = 4;
-        final int USERNAME_WIDTH = 16;
-        final int NAME_WIDTH     = 14;
-        final int SURNAME_WIDTH  = 14;
-        final int ROLE_WIDTH     = 14;
-        final int CREATED_WIDTH  = 19; // 2025-12-03T23:59:59
-
-        int totalWidth = 2 + ID_WIDTH
-                    + 3 + USERNAME_WIDTH
-                    + 3 + NAME_WIDTH
-                    + 3 + SURNAME_WIDTH
-                    + 3 + ROLE_WIDTH
-                    + 3 + CREATED_WIDTH
-                    + 2;
-
-        String separator = "─".repeat(totalWidth);
-
-        // Üst çizgi
-        System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
-
-        // HEADER
-        System.out.printf(
-            ConsoleColors.BLUE +
-            "| %-" + ID_WIDTH       + "s" +
-            " | %-" + USERNAME_WIDTH + "s" +
-            " | %-" + NAME_WIDTH     + "s" +
-            " | %-" + SURNAME_WIDTH  + "s" +
-            " | %-" + ROLE_WIDTH     + "s" +
-            " | %-" + CREATED_WIDTH  + "s |\n" +
-            ConsoleColors.RESET,
-            "ID", "Username", "Name", "Surname", "Role", "Created At"
-        );
-
-        System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
-
-        // SATIRLAR (zebra)
-        int row = 0;
-
-        for (User u : users)
-        {
-            String rowColor = (row % 2 == 0)
-                ? ConsoleColors.WHITE
-                : ConsoleColors.RESET;
-
-            String createdAtStr = (u.getCreatedAt() != null)
-                ? u.getCreatedAt().toString()
-                : "N/A";
-
-            System.out.printf(
-                rowColor +
-                "| %-" + ID_WIDTH       + "d" +
-                " | %-" + USERNAME_WIDTH + "s" +
-                " | %-" + NAME_WIDTH     + "s" +
-                " | %-" + SURNAME_WIDTH  + "s" +
-                " | %-" + ROLE_WIDTH     + "s" +
-                " | %-" + CREATED_WIDTH  + "s |\n" +
-                ConsoleColors.RESET,
-                u.getUserId(),
-                u.getUsername() != null ? u.getUsername() : "",
-                u.getName()     != null ? u.getName()     : "",
-                u.getSurname()  != null ? u.getSurname()  : "",
-                u.getRole()     != null ? u.getRole().name() : "N/A",
-                createdAtStr
-            );
-
-            row++;
-        }
-
-        System.out.println(ConsoleColors.CYAN + separator + ConsoleColors.RESET);
-}
-
 }

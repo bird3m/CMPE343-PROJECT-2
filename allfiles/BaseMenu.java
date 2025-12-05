@@ -6,6 +6,19 @@ import java.util.Scanner;
  */
 public abstract class BaseMenu
 {
+    // -------------------------------------------------------------------
+    // Rəng Sabitləri (ANSI Escape Kodları) - Bütün siniflər üçün istifadə olunur
+    // -------------------------------------------------------------------
+    public static final String RESET = "\033[0m";     // Normal rəngə qayıtmaq üçün
+    public static final String RED = "\033[0;31m";       // Qırmızı (Səhvlər/Xəbərdarlıqlar)
+    public static final String GREEN = "\033[0;32m";     // Yaşıl (Uğur/Müsbət)
+    public static final String YELLOW = "\033[0;33m";    // Sarı
+    public static final String BLUE = "\033[0;34m";      // Mavi (İstifadəçi adı/Başlıqlar)
+    public static final String CYAN = "\033[0;36m";      // Göy (İnformasiya/Promptlar)
+    public static final String BOLD = "\033[1m";   
+          // Qalın şrift
+    // -------------------------------------------------------------------
+
     protected final User currentUser;
     protected final Scanner scanner;
     protected final AuthService authService;
@@ -32,13 +45,17 @@ public abstract class BaseMenu
         while (running)
         {
             System.out.println();
+            
+            // İstifadəçi məlumatı MAVİ rəngdə
+            System.out.print(BaseMenu.BLUE);
             System.out.println("Logged in as: " + currentUser.getName() + " " + currentUser.getSurname()
-                + " (" + currentUser.getRole() + ")");
+                + " (" + currentUser.getRole() + ")" + BaseMenu.RESET);
 
             printMenuHeader();
             printMenuOptions();
 
-            System.out.print("Choice: ");
+            // Seçim prompt-u GÖY rəngdə
+            System.out.print(BaseMenu.CYAN + "Choice: " + BaseMenu.RESET); 
             String choice = scanner.nextLine().trim();
 
             running = handleChoice(choice);
@@ -53,7 +70,6 @@ public abstract class BaseMenu
      * @param prompt text shown to the user
      * @return trimmed input string
      * Helper method to get trimmed user input.
-
      */
     protected String getInputWithPrompt(String prompt)
     {
@@ -78,7 +94,7 @@ public abstract class BaseMenu
     protected void changePasswordFlow()
     {
         clearScreen();
-        System.out.println("\n-- Change Password --");
+        System.out.println(BaseMenu.BOLD + "\n-- Change Password --" + BaseMenu.RESET); 
 
         System.out.print("Current password: ");
         String oldPw = scanner.nextLine().trim();
@@ -93,11 +109,13 @@ public abstract class BaseMenu
 
         if (ok)
         {
-            System.out.println("Password updated successfully.");
+            // Uğur mesajı YAŞIL
+            System.out.println(BaseMenu.GREEN + "Password updated successfully." + BaseMenu.RESET);
         }
         else
         {
-            System.out.println("Password NOT changed (see error message above).");
+            // Səhv mesajı QIRMIZI
+            System.out.println(BaseMenu.RED + "Password NOT changed (see error message above)." + BaseMenu.RESET);
         }
     }
 

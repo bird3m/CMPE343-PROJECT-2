@@ -18,27 +18,29 @@ public class Main
             e.printStackTrace();
         }
 
-        System.out.println("Starting Contact Management System...");
+        
+        System.out.println(BaseMenu.YELLOW + "Starting Contact Management System..." + BaseMenu.RESET);
 
         try (Connection conn = DatabaseConnection.getConnection())
         {
             if (conn == null)
             {
-                System.out.println("Database connection failed (null returned). Please check MySQL settings.");
+                System.out.println(BaseMenu.RED + "Database connection failed (null returned). Please check MySQL settings." + BaseMenu.RESET);
                 return;
             }
 
-            System.out.println("Database connection successful.");
+            System.out.println(BaseMenu.GREEN + "Database connection successful." + BaseMenu.RESET);
         }
         catch (SQLException e)
         {
-            System.out.println("Error while closing test connection: " + e.getMessage());
+            
+            System.out.println(BaseMenu.RED + "Error while closing test connection: " + e.getMessage() + BaseMenu.RESET);
         }
 
-        System.out.println("\nOpening login menu...\n");
+        
+        System.out.println(BaseMenu.CYAN + "\nOpening login menu...\n" + BaseMenu.RESET);
 
         LoginMenu loginMenu = new LoginMenu();
         loginMenu.start();
     }
 }
-
