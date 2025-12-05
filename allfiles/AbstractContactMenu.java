@@ -61,20 +61,22 @@ public abstract class AbstractContactMenu extends BaseMenu
             switch (choice)
             {
                 // ---------- SINGLE-FIELD ----------
-
                 case "1":
+                    clearScreen();
                     System.out.print("Enter first name substring: ");
                     String firstPart = scanner.nextLine().trim();
                     printContactList(contactDao.searchByField("first_name", firstPart));
                     break;
 
                 case "2":
+                    clearScreen();
                     System.out.print("Enter nickname substring: ");
                     String nickPart = scanner.nextLine().trim();
                     printContactList(contactDao.searchByField("nickname", nickPart));
                     break;
 
                 case "3":
+                    clearScreen();
                     System.out.print("Enter LinkedIn URL substring: ");
                     String linkPart = scanner.nextLine().trim();
                     printContactList(contactDao.searchByField("linkedin_url", linkPart));
@@ -84,6 +86,7 @@ public abstract class AbstractContactMenu extends BaseMenu
 
                 case "4":
                 {
+                    clearScreen();
                     System.out.print("First name contains: ");
                     String firstX = scanner.nextLine().trim();
                     System.out.print("LinkedIn URL contains: ");
@@ -103,6 +106,7 @@ public abstract class AbstractContactMenu extends BaseMenu
 
                 case "5":
                 {
+                    clearScreen();
                     System.out.print("Nickname contains: ");
                     String nickX = scanner.nextLine().trim();
                     System.out.print("LinkedIn URL contains: ");
@@ -142,6 +146,7 @@ public abstract class AbstractContactMenu extends BaseMenu
                 }
 
                 case "0":
+                    clearScreen();
                     return;
 
                 default:
@@ -151,19 +156,20 @@ public abstract class AbstractContactMenu extends BaseMenu
     }
 
 /**
- * 
- * @param contacts
+ * Prints and displays the contacts list.
+ * @param contacts List of contacts.
  */
 
 protected void printContactList(List<Contact> contacts)
 {
+    clearScreen();
     if (contacts == null || contacts.isEmpty())
     {
         System.out.println("No contacts found.");
         return;
     }
 
-    // Daha dar kolon genişlikleri
+   
     final int ID_W       = 3;
     final int FIRST_W    = 10;
     final int LAST_W     = 10;
@@ -171,7 +177,7 @@ protected void printContactList(List<Contact> contacts)
     final int PHONE1_W   = 11;
     final int PHONE2_W   = 11;
     final int EMAIL_W    = 20;
-    final int BIRTH_W    = 10;   // 2025-12-04
+    final int BIRTH_W    = 10;   
     final int LINKEDIN_W = 20;
 
     int totalWidth = 2 + ID_W

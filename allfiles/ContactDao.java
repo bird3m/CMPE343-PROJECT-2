@@ -480,4 +480,53 @@ public class ContactDao
 
         return result;
     }
+
+    public boolean restoreContactWithSameId(Contact c)
+    {
+        Connection conn = DatabaseConnection.getConnection();
+        if (conn == null)
+        {
+            System.out.println("ContactDao: Could not obtain database connection.");
+            return false;
+        }
+
+        String sql =
+            "INSERT INTO contacts (" +
+            "contact_id, first_name, middle_name, last_name, nickname, " +
+            "phone_primary, phone_secondary, email, linkedin_url, birth_date, " +
+            "created_at, updated_at) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql))
+        {
+            ps.setInt(1, c.getContactId());
+            ps.setString(2, c.getFirstName());
+            ps.setString(3, c.getMiddleName());
+            ps.setString(4, c.getLastName());
+            ps.setString(5, c.getNickname());
+            ps.setString(6, c.getPhonePrimary());
+            ps.setString(7, c.getPhoneSecondary());
+            ps.setString(8, c.getEmail());
+            ps.setString(9, c.getLinkedinUrl());
+
+            if (c.getBirthDate() != null)
+            {
+                ps.setDate(10, Date.valueOf(c.getBirthDate()));
+            }
+            else
+            {
+                ps.setDate(10, null); // null → DB default / NULL
+            }
+
+            int inserted = ps.executeUpdate();
+            return inserted > 0;
+        }
+        catch (SQLException e)
+        {
+            System.out.println("ContactDao: SQL error in restoreContactWithSameId: " + e.getMessage());
+            return false;
+        }
+}
+
+
 }

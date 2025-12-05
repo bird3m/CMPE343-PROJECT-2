@@ -69,12 +69,15 @@ public abstract class BaseMenu
      * @return true to continue menu loop, false to logout
      */
     protected abstract boolean handleChoice(String choice);
+  
+    
 
     /**
      * Password change flow shared by all menus.
      */
     protected void changePasswordFlow()
     {
+        clearScreen();
         System.out.println("\n-- Change Password --");
 
         System.out.print("Current password: ");
@@ -122,7 +125,7 @@ public abstract class BaseMenu
     {
         return s;
     }
-    // width en az 2 olmalı; bizde zaten daha büyük
+    // width should be at least 2
     return s.substring(0, width - 1) + "…";
 }
 

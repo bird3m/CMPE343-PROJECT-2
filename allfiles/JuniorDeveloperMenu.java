@@ -64,6 +64,7 @@ public class JuniorDeveloperMenu extends AbstractContactMenu
             case "0":
                 System.out.println("Logging out...");
                 return false;
+    
 
             default:
                 System.out.println("Invalid option, try again.");

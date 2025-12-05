@@ -53,7 +53,7 @@ public class TesterMenu extends AbstractContactMenu
 
             case "0":
                 System.out.println("Logging out...");
-                return false;                     // The loop ends → Returns to LoginMenu
+                return false;                     // The loop ends, Returns to LoginMenu
 
             default:
                 System.out.println("Invalid option, try again.");
