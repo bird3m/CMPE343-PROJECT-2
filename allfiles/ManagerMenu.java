@@ -3,28 +3,56 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-// Since the Scanner import is in BaseMenu, it can be kept in ManagerMenu, but it is not mandatory.
-// I'm leaving this code as is to keep it clean.
 
-
+/**
+ * Menu implementation for the {@link Role#MANAGER} user role.
+ * <p>
+ * A manager can:
+ * <ul>
+ *     <li>Change their own password (via {@link BaseMenu}</li>
+ *     <li>View statistical information about contacts</li>
+ *     <li>List all users</li>
+ *     <li>Add (employ) new users</li>
+ *     <li>Update existing users</li>
+ *     <li>Delete (fire) existing users</li>
+ * </ul>
+ * This class extends {@link BaseMenu} and uses {@link UserDao} and
+ * {@link ContactDao} to perform database operations.
+ */
 public class ManagerMenu extends BaseMenu
 {
+    /** Data access object for contacts, used for statistics. */
     private final ContactDao contactDao;
-    private final UserDao userDao; 
 
+    /** Data access object for user management operations. */
+    private final UserDao userDao;
+
+    /**
+     * Creates a new manager menu for the given logged-in user.
+     *
+     * @param currentUser the currently authenticated user (must have MANAGER role)
+     */
     public ManagerMenu(User currentUser)
     {
         super(currentUser);
         this.contactDao = new ContactDao();
-        this.userDao = new UserDao(); 
+        this.userDao = new UserDao();
     }
 
+    /**
+     * Prints the header for the manager menu.
+     * <p>
+     * Called by the base menu framework when rendering the menu.
+     */
     @Override
     protected void printMenuHeader()
     {
         System.out.println("=== MANAGER MENU ===");
     }
 
+    /**
+     * Prints the list of available menu options for the manager role.
+     */
     @Override
     protected void printMenuOptions()
     {
@@ -37,13 +65,20 @@ public class ManagerMenu extends BaseMenu
         System.out.println("0) Logout");
     }
 
+    /**
+     * Handles a single menu choice entered by the manager.
+     *
+     * @param choice the raw menu option string entered by the user
+     * @return {@code true} to keep the menu loop running, {@code false} to exit to the previous screen
+     */
     @Override
     protected boolean handleChoice(String choice)
     {
         switch (choice)
         {
             case "1":
-                changePasswordFlow(); // BaseMenu'dan çağrılır
+                // Change password for the current user (implemented in BaseMenu)
+                changePasswordFlow();
                 return true;
 
             case "2":
@@ -77,16 +112,20 @@ public class ManagerMenu extends BaseMenu
     }
 
     /**
-     * Lists all users
+     * Lists all users currently stored in the system.
+     * <p>
+     * Fetches all users through {@link UserDao#findAll()} and prints a simple table
+     * containing ID, username, name, surname, role, and creation timestamp.
+     * If no users exist, an informational message is printed instead.
      */
     private void listAllUsers()
     {
         System.out.println("\n=== ALL USERS ===");
-        
+
         try
         {
-            List<User> allUsers = userDao.findAll(); // UserDao'dan doğru çağrı
-            
+            List<User> allUsers = userDao.findAll();
+
             if (allUsers == null || allUsers.isEmpty())
             {
                 System.out.println("No users found in the system.");
@@ -95,7 +134,7 @@ public class ManagerMenu extends BaseMenu
 
             System.out.println("Total users: " + allUsers.size());
             System.out.println("─────────────────────────────────────────────────────────────────────");
-            System.out.printf("%-5s %-15s %-20s %-20s %-15s %-20s%n", 
+            System.out.printf("%-5s %-15s %-20s %-20s %-15s %-20s%n",
                              "ID", "Username", "Name", "Surname", "Role", "Created At");
             System.out.println("─────────────────────────────────────────────────────────────────────");
 
@@ -118,17 +157,21 @@ public class ManagerMenu extends BaseMenu
     }
 
     /**
-     * Add new users
+     * Starts the flow for adding/employing a new user.
+     * <p>
+     * Prompts the manager for username, password, name, surname, and role,
+     * performs basic validation (e.g. non-empty fields, unique username),
+     * hashes the password using {@link PasswordHasher}, and persists the new
+     * user using {@link UserDao#save(User)}.
      */
     private void addNewUser()
     {
         System.out.println("\n=== ADD NEW USER ===");
-        
+
         try
         {
-            // Tüm girdi alma işlemleri BaseMenu'dan gelen getInputWithPrompt() ile yapılıyor.
-            String username = getInputWithPrompt("Enter username: "); 
-            
+            String username = getInputWithPrompt("Enter username: ");
+
             if (username.isEmpty())
             {
                 System.out.println("Username cannot be empty!");
@@ -143,7 +186,7 @@ public class ManagerMenu extends BaseMenu
             }
 
             String password = getInputWithPrompt("Enter password: ");
-            
+
             if (password.isEmpty())
             {
                 System.out.println("Password cannot be empty!");
@@ -151,7 +194,7 @@ public class ManagerMenu extends BaseMenu
             }
 
             String name = getInputWithPrompt("Enter name: ");
-            
+
             if (name.isEmpty())
             {
                 System.out.println("Name cannot be empty!");
@@ -159,7 +202,7 @@ public class ManagerMenu extends BaseMenu
             }
 
             String surname = getInputWithPrompt("Enter surname: ");
-            
+
             if (surname.isEmpty())
             {
                 System.out.println("Surname cannot be empty!");
@@ -173,9 +216,9 @@ public class ManagerMenu extends BaseMenu
             System.out.println("3) SENIOR_DEVELOPER");
             System.out.println("4) MANAGER");
             String roleChoice = getInputWithPrompt("Enter choice (1-4): ");
-            
+
             Role role;
-            
+
             switch (roleChoice)
             {
                 case "1":
@@ -197,21 +240,21 @@ public class ManagerMenu extends BaseMenu
 
             // Salt and hash generation from PasswordHasher
             String salt = PasswordHasher.generateSalt();
-            String passwordHash = PasswordHasher.hashPassword(password, salt); // PasswordHasher'da var olmalı
+            String passwordHash = PasswordHasher.hashPassword(password, salt);
 
             // New user object
             User newUser = new User();
             newUser.setUsername(username);
             newUser.setPasswordHash(passwordHash);
-            newUser.setPasswordSalt(salt); 
+            newUser.setPasswordSalt(salt);
             newUser.setName(name);
             newUser.setSurname(surname);
             newUser.setRole(role);
             newUser.setCreatedAt(LocalDateTime.now());
 
             // Save to database
-            boolean success = userDao.save(newUser); // UserDao'da var
-            
+            boolean success = userDao.save(newUser);
+
             if (success)
             {
                 System.out.println("✓ User added successfully!");
@@ -231,18 +274,22 @@ public class ManagerMenu extends BaseMenu
     }
 
     /**
-     * Updates the current user
+     * Starts the flow for updating an existing user.
+     * <p>
+     * The manager selects a user by ID and then chooses which field to update:
+     * username, password, name, surname or role. After modification, the
+     * changes are persisted using {@link UserDao#update(User)}.
      */
     private void updateExistingUser()
     {
         System.out.println("\n=== UPDATE EXISTING USER ===");
-        
+
         try
         {
             listAllUsers();
-            
+
             String input = getInputWithPrompt("\nEnter user ID to update (0 to cancel): ");
-            
+
             if (input.equals("0"))
             {
                 System.out.println("Update cancelled.");
@@ -260,8 +307,8 @@ public class ManagerMenu extends BaseMenu
                 return;
             }
 
-            User user = userDao.findById(userId); // UserDao'da var
-            
+            User user = userDao.findById(userId);
+
             if (user == null)
             {
                 System.out.println("User with ID " + userId + " not found!");
@@ -281,7 +328,7 @@ public class ManagerMenu extends BaseMenu
             System.out.println("4) Surname");
             System.out.println("5) Role");
             System.out.println("0) Cancel");
-            
+
             String choice = getInputWithPrompt("Enter choice: ");
 
             switch (choice)
@@ -335,7 +382,7 @@ public class ManagerMenu extends BaseMenu
                     System.out.println("3) SENIOR_DEVELOPER");
                     System.out.println("4) MANAGER");
                     String roleChoice = getInputWithPrompt("Enter choice (1-4): ");
-                    
+
                     switch (roleChoice)
                     {
                         case "1":
@@ -365,8 +412,8 @@ public class ManagerMenu extends BaseMenu
                     return;
             }
 
-            boolean success = userDao.update(user); // UserDao'da var
-            
+            boolean success = userDao.update(user);
+
             if (success)
             {
                 System.out.println("✓ User updated successfully!");
@@ -383,18 +430,22 @@ public class ManagerMenu extends BaseMenu
     }
 
     /**
-     * Deletes the user
+     * Starts the flow for deleting/firing an existing user.
+     * <p>
+     * The manager selects a user by ID, confirms the deletion, and then
+     * the user is removed via {@link UserDao#delete(int)}. A manager
+     * cannot delete themselves.
      */
     private void deleteExistingUser()
     {
         System.out.println("\n=== DELETE/FIRE EXISTING USER ===");
-        
+
         try
         {
             listAllUsers();
-            
+
             String input = getInputWithPrompt("\nEnter user ID to delete (0 to cancel): ");
-            
+
             if (input.equals("0"))
             {
                 System.out.println("Deletion cancelled.");
@@ -412,8 +463,8 @@ public class ManagerMenu extends BaseMenu
                 return;
             }
 
-            User user = userDao.findById(userId); // UserDao'da var
-            
+            User user = userDao.findById(userId);
+
             if (user == null)
             {
                 System.out.println("User with ID " + userId + " not found!");
@@ -439,8 +490,8 @@ public class ManagerMenu extends BaseMenu
                 return;
             }
 
-            boolean success = userDao.delete(userId); // UserDao'da var
-            
+            boolean success = userDao.delete(userId);
+
             if (success)
             {
                 System.out.println("✓ User deleted successfully!");
@@ -456,6 +507,18 @@ public class ManagerMenu extends BaseMenu
         }
     }
 
+    /**
+     * Displays basic statistical information about contacts.
+     * <p>
+     * Statistics include:
+     * <ul>
+     *     <li>Total number of contacts</li>
+     *     <li>Number of contacts grouped by last name</li>
+     *     <li>Number of contacts grouped by email domain</li>
+     *     <li>Earliest and latest birth date among contacts (if available)</li>
+     * </ul>
+     * Data is obtained via {@link ContactDao#getAllContacts(String, boolean)}.
+     */
     private void showContactStatistics()
     {
         System.out.println("\n-- Contact Statistics --");
@@ -495,10 +558,16 @@ public class ManagerMenu extends BaseMenu
         }
 
         System.out.println("\nContacts per last name:");
-        for (Map.Entry<String, Integer> e : byLastName.entrySet()) System.out.println("  " + e.getKey() + ": " + e.getValue());
+        for (Map.Entry<String, Integer> e : byLastName.entrySet())
+        {
+            System.out.println("  " + e.getKey() + ": " + e.getValue());
+        }
 
         System.out.println("\nContacts per email domain:");
-        for (Map.Entry<String, Integer> e : byEmailDomain.entrySet()) System.out.println("  " + e.getKey() + ": " + e.getValue());
+        for (Map.Entry<String, Integer> e : byEmailDomain.entrySet())
+        {
+            System.out.println("  " + e.getKey() + ": " + e.getValue());
+        }
 
         System.out.println("\nBirth date range:");
         if (minBirth != null && maxBirth != null)

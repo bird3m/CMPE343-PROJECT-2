@@ -7,8 +7,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Access Object (DAO) responsible for performing all database operations
+ * related to {@link User} objects.
+ * <p>
+ * Provides CRUD operations, password updates, and helper methods for converting
+ * SQL query results into User domain objects.
+ * <p>
+ * All interactions rely on {@link DatabaseConnection} to obtain a live JDBC connection.
+ */
 public class UserDao
 {
+    /* ============================ SQL QUERIES ============================ */
+
     private static final String FIND_BY_USERNAME_SQL =
         "SELECT user_id, username, password_hash, password_salt, name, surname, role, created_at "
             + "FROM users WHERE username = ?";
@@ -32,8 +43,14 @@ public class UserDao
     private static final String DELETE_USER_SQL =
         "DELETE FROM users WHERE user_id = ?";
 
+
+    /* ============================ QUERY METHODS ============================ */
+
     /**
-     * Finding users by username
+     * Retrieves a user from the database by username.
+     *
+     * @param username the username to search for
+     * @return a {@link User} object if found, otherwise {@code null}
      */
     public User findByUsername(String username)
     {
@@ -55,7 +72,6 @@ public class UserDao
                 {
                     return null;
                 }
-
                 return extractUserFromResultSet(rs);
             }
         }
@@ -68,7 +84,10 @@ public class UserDao
     }
 
     /**
-     * Finding users by ID
+     * Retrieves a user by its unique ID.
+     *
+     * @param userId the ID of the user to retrieve
+     * @return a {@link User} object if found, or {@code null} if not found
      */
     public User findById(int userId)
     {
@@ -90,7 +109,6 @@ public class UserDao
                 {
                     return null;
                 }
-
                 return extractUserFromResultSet(rs);
             }
         }
@@ -103,7 +121,9 @@ public class UserDao
     }
 
     /**
-     * List all users
+     * Returns a list of all users stored in the database.
+     *
+     * @return a list of {@link User} objects; empty list if none found or on error
      */
     public List<User> findAll()
     {
@@ -138,7 +158,10 @@ public class UserDao
     }
 
     /**
-     * Add new user
+     * Inserts a new user into the database.
+     *
+     * @param user the user entity to persist
+     * @return {@code true} if the user was successfully added, {@code false} otherwise
      */
     public boolean save(User user)
     {
@@ -158,8 +181,10 @@ public class UserDao
             ps.setString(4, user.getName());
             ps.setString(5, user.getSurname());
             ps.setString(6, user.getRole().toString());
-            
-            LocalDateTime createdAt = user.getCreatedAt() != null ? user.getCreatedAt() : LocalDateTime.now();
+
+            LocalDateTime createdAt = user.getCreatedAt() != null
+                                      ? user.getCreatedAt()
+                                      : LocalDateTime.now();
             ps.setTimestamp(7, Timestamp.valueOf(createdAt));
 
             int inserted = ps.executeUpdate();
@@ -174,7 +199,10 @@ public class UserDao
     }
 
     /**
-     * User update
+     * Updates an existing user’s details.
+     *
+     * @param user a fully populated user object containing updated fields
+     * @return {@code true} if the update succeeded, {@code false} otherwise
      */
     public boolean update(User user)
     {
@@ -208,7 +236,10 @@ public class UserDao
     }
 
     /**
-     * Delete user
+     * Deletes a user from the database by ID.
+     *
+     * @param userId the ID of the user to remove
+     * @return {@code true} if at least one record was deleted, {@code false} otherwise
      */
     public boolean delete(int userId)
     {
@@ -236,7 +267,14 @@ public class UserDao
     }
 
     /**
-     * Password update
+     * Updates only the password fields (hash & salt) for a specific username.
+     * <p>
+     * Used when the user changes their password via profile or admin operation.
+     *
+     * @param username the username whose password should be updated
+     * @param newHash  the newly computed PBKDF2 password hash
+     * @param newSalt  the cryptographic salt used to hash the password
+     * @return {@code true} if the update succeeded, {@code false} otherwise
      */
     public boolean updatePassword(String username, String newHash, String newSalt)
     {
@@ -265,8 +303,17 @@ public class UserDao
         }
     }
 
+
+    /* ============================ HELPER METHODS ============================ */
+
     /**
-     * Creating a User object from a ResultSet (helper method)
+     * Converts a ResultSet row into a fully populated {@link User} object.
+     * <p>
+     * This method is shared by all finder queries.
+     *
+     * @param rs the active ResultSet positioned at a valid row
+     * @return a populated User entity
+     * @throws SQLException if column extraction fails
      */
     private User extractUserFromResultSet(ResultSet rs) throws SQLException
     {
@@ -283,25 +330,24 @@ public class UserDao
         {
             try
             {
-                Role role = Role.valueOf(roleStr);
-                user.setRole(role);
+                user.setRole(Role.valueOf(roleStr));
             }
             catch (IllegalArgumentException e)
             {
-                System.out.println("Warning: Invalid role value: " + roleStr);
+                System.out.println("Warning: Invalid role value in database: " + roleStr);
             }
         }
 
-        try
+        if (rs.getTimestamp("created_at") != null)
         {
-            if (rs.getTimestamp("created_at") != null)
+            try
             {
                 user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
             }
-        }
-        catch (Exception e)
-        {
-            // Ignore timestamp parsing errors
+            catch (Exception ignored)
+            {
+                // Ignore timestamp parsing errors
+            }
         }
 
         return user;

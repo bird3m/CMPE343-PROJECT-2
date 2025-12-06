@@ -6,6 +6,15 @@ import java.util.Base64;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+/**
+ * Utility class for user password security.
+ * <p>
+ * Provides methods for generating salts and hashing passwords using
+ * PBKDF2WithHmacSHA256. This hashing method is intentionally slow
+ * (high iteration count) to protect against brute-force attacks.
+ * <p>
+ * Used by user-related operations such as account creation and password updates.
+ */
 public class PasswordHasher
 {
     /**

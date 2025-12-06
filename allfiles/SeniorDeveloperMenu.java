@@ -382,10 +382,6 @@ else
         c.setPhoneSecondary(secondaryPhone);
 
 
-        System.out.print("Secondary phone (optional): ");
-        String p2 = scanner.nextLine().trim();
-        c.setPhoneSecondary(p2.isEmpty() ? null : p2);
-
         String email;
         while (true)
         {
